@@ -2,6 +2,7 @@
 namespace frontend\controllers;
 
 use frontend\models\ResendVerificationEmailForm;
+use frontend\models\TaskForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
@@ -77,6 +78,46 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+    /**
+     * Logs in a user.
+     *
+     * @return mixed
+     */
+    public function actionAddTask()
+    {
+        $model = new TaskForm(); //создаём объект
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('task', [
+            'model' => $model,
+        ]);
+
+//        //теперь, будем писать данные в объекте
+//        $model->title = "Иванов Иван";
+//        $model->description = "ivan@gmail.com";
+//        $model->category = "Привет, классные статьи. Спасибо.";
+//        // и сохраним
+//        $model->save();
+    }
+
+    public function actionView($id)
+    {
+//        return print_r($this->findModel($id));
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    protected function findModel($id)
+    {
+        if (($model = TaskForm::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
     /**
      * Logs in a user.
      *
