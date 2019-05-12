@@ -24,7 +24,9 @@ class TaskForm extends ActiveRecord
         return [
             [['title'], 'required'],
             [['title', 'description'], 'string'],
-            [['title'], 'string', 'max' => 250]
+            [['title'], 'string', 'max' => 250],
+            [['category'], 'integer'    ],
+            [['priority'], 'integer', 'max' => 4],
         ];
     }
 
@@ -35,9 +37,10 @@ class TaskForm extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Title',
-            'description' => 'Description',
-            'category' => 'Category',
+            'title' => 'Тема',
+            'description' => 'Описание',
+            'category' => 'Категория',
+            'priority' => 'Приоритет',
         ];
 
 
