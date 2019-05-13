@@ -2,8 +2,8 @@
 namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
-use frontend\models\TaskForm;
-
+use frontend\models\Task;
+use yii\data\ActiveDataProvider;
 
 /**
  * Site controller
@@ -35,7 +35,13 @@ class TaskController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()->orderBy('date DESC'),
+            'pagination' => [
+                'pageSize' => 5,
+            ],
+        ]);
+        return $this->render('index', ['listDataProvider' => $dataProvider]);
     }
 
     /**
@@ -43,9 +49,10 @@ class TaskController extends Controller
      *
      * @return mixed
      */
-    public function actionAddTask()
+    public function actionCreate()
     {
-        $model = new TaskForm(); //создаём объект
+        $model = new Task(); //создаём объект
+        $model->date = date('Y-m-d');
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -65,7 +72,7 @@ class TaskController extends Controller
 
     protected function findModel($id)
     {
-        if (($model = TaskForm::findOne($id)) !== null) {
+        if (($model = Task::findOne($id)) !== null) {
             return $model;
         }
 

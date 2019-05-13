@@ -47,4 +47,5 @@ return [
 
     ],
     'params' => $params,
+    'defaultRoute'=> 'task',
 ];
