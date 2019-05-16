@@ -1,4 +1,7 @@
 <?php
+
+use frontend\models\Category;
+use frontend\models\Priorities;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 ?>
@@ -20,9 +23,9 @@ use yii\helpers\HtmlPurifier;
     <tr>
         <td><?=$model->id ?></td>
         <td>test</td>
-        <td><?=$model->category ?></td>
+        <td><?=Category::find()->where(['id' => $model->category])->one()->title ?></td>
         <td><?=$model->title ?></td>
-        <td><?=$model->priority ?></td>
+        <td><?=Priorities::find()->where(['code' => $model->priority])->one()->title ?></td>
     </tr>
     <tr style="background-color:#fff; border: none"><th style="background-color:#fff; border: none" colspan="5"><?= Html::a('Просмотреть',['view?id='.$model->id]) ?></th></tr>
     <tbody>

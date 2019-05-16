@@ -8,12 +8,12 @@ use yii\db\ActiveRecord;
 /**
  * ContactForm is the model behind the contact form.
  */
-class Task extends ActiveRecord
+class Project extends ActiveRecord
 {
 
     public static function tableName()
     {
-        return 'task';
+        return 'project';
     }
 
     /**
@@ -23,12 +23,10 @@ class Task extends ActiveRecord
     {
         return [
             [['title'], 'required'],
-            [['title', 'description'], 'string'],
-            [['title'], 'string', 'max' => 250],
-            [['category'], 'integer'    ],
-            [['priority'], 'integer', 'max' => 4],
+            [['title'], 'string'],
+            [['description'], 'text'],
             [['date'], 'date', 'format' => 'Y-m-d'],
-            [['status'], 'string', 'max' => 10],
+//            [['status'], 'string', 'max' => 10],
         ];
     }
 
@@ -39,10 +37,8 @@ class Task extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Тема',
+            'title' => 'Название',
             'description' => 'Описание',
-            'category' => 'Категория',
-            'priority' => 'Приоритет',
             'date' => 'Дата',
         ];
 

@@ -36,7 +36,7 @@ class TaskController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Task::find()->orderBy('date DESC'),
+            'query' => Task::find()->orderBy('id DESC'),
             'pagination' => [
                 'pageSize' => 5,
             ],
@@ -53,6 +53,10 @@ class TaskController extends Controller
     {
         $model = new Task(); //создаём объект
         $model->date = date('Y-m-d');
+        $status = Yii::$app->request->post('status');
+        if($status === null)
+            $model->status = 'new';
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
