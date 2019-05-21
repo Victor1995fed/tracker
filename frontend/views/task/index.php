@@ -9,7 +9,9 @@ $this->title = 'Ваши задачи';
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
-        <?= Html::a('Добавить', ['create'], ['class' => 'btn btn-success']); ?>
+        <?= Html::a('Добавить задачу', ['create'], ['class' => 'btn btn-success']); ?>
+        <?= Html::a('Добавить категорию', ['category/create'], ['class' => 'btn btn-success']); ?>
+        <?= Html::a('Добавить проект', ['project/create'], ['class' => 'btn btn-success']); ?>
     </p>
 </div>
 

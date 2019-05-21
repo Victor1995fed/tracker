@@ -24,10 +24,11 @@ class Project extends ActiveRecord
         return [
             [['title'], 'required'],
             [['title'], 'string'],
-            [['description'], 'text'],
             [['date'], 'date', 'format' => 'Y-m-d'],
-//            [['status'], 'string', 'max' => 10],
+            [['status'], 'string', 'max' => 10],
         ];
+
+
     }
 
     /**
@@ -40,6 +41,7 @@ class Project extends ActiveRecord
             'title' => 'Название',
             'description' => 'Описание',
             'date' => 'Дата',
+            'iamge' => 'Картинка',
         ];
 
 
