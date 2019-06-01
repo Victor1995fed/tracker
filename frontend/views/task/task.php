@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?= $form->field($model, 'description')->textarea(['rows' => '6']) ?>
 
-            <?= $form->field($model, 'category')->dropDownList([
+            <?= $form->field($model, 'category_id')->dropDownList([
                 '0' => 'Активный',
                 '1' => 'Отключен',
                 '2'=>'Удален'

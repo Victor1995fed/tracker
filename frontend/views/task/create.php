@@ -32,11 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ]); ?>
 
-            <?= $form->field($model, 'priority')->dropDownList(
+            <?= $form->field($model, 'priority_id')->dropDownList(
                 ArrayHelper::map(Priorities::find()->all(), 'code', 'title')
             ) ?>
 
-            <?= $form->field($model, 'category')->dropDownList(
+            <?= $form->field($model, 'category_id')->dropDownList(
                 ArrayHelper::map(Category::find()->all(), 'id', 'title')
             ) ?>
 

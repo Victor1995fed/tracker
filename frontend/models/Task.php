@@ -25,8 +25,8 @@ class Task extends ActiveRecord
             [['title'], 'required'],
             [['title', 'description'], 'string'],
             [['title'], 'string', 'max' => 250],
-            [['category'], 'integer'    ],
-            [['priority'], 'integer', 'max' => 4],
+            [['category_id'], 'integer'    ],
+            [['priority_id'], 'integer', 'max' => 4],
             [['date'], 'date', 'format' => 'Y-m-d'],
             [['status'], 'string', 'max' => 10],
         ];
@@ -41,11 +41,18 @@ class Task extends ActiveRecord
             'id' => 'ID',
             'title' => 'Тема',
             'description' => 'Описание',
-            'category' => 'Категория',
-            'priority' => 'Приоритет',
+            'category_id' => 'Категория',
+            'priority_id' => 'Приоритет',
             'date' => 'Дата',
         ];
 
 
+    }
+
+    public function getCategory(){
+        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+    public function getPriority(){
+        return $this->hasOne(Priorities::className(), ['id' => 'priority_id']);
     }
 }

@@ -36,12 +36,13 @@ class TaskController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Task::find()->orderBy('id DESC'),
+            'query' => Task::find()->with('category','priority')->orderBy('id DESC'),
             'pagination' => [
                 'pageSize' => 5,
             ],
+
         ]);
-        return $this->render('index', ['listDataProvider' => $dataProvider]);
+        return $this->render('index', ['dataProvider' => $dataProvider]);
     }
 
     /**

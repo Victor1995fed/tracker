@@ -23,9 +23,9 @@ use yii\helpers\HtmlPurifier;
     <tr>
         <td><?=$model->id ?></td>
         <td>test</td>
-        <td><?=Category::find()->where(['id' => $model->category])->one()->title ?></td>
+        <td><?=$model->category->title ?></td>
         <td><?=$model->title ?></td>
-        <td><?=Priorities::find()->where(['code' => $model->priority])->one()->title ?></td>
+        <td><?=$model->priority->title ?></td>
     </tr>
     <tr style="background-color:#fff; border: none"><th style="background-color:#fff; border: none" colspan="5"><?= Html::a('Просмотреть',['view?id='.$model->id]) ?></th></tr>
     <tbody>
