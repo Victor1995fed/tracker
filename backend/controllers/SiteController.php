@@ -63,6 +63,13 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+//    Для отмены редиректа на Login убрать правила в behaviors;
+    public function actionTest()
+    {
+        return "teeeee";
+        return $this->render('index');
+    }
+
     /**
      * Login action.
      *
@@ -70,6 +77,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        return "test";
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
