@@ -66,8 +66,8 @@ class SiteController extends Controller
 //    Для отмены редиректа на Login убрать правила в behaviors;
     public function actionTest()
     {
+        echo 'df';
         return "teeeee";
-        return $this->render('index');
     }
 
     /**
@@ -105,4 +105,16 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+
+//    /**
+//     * Logout action.
+//     *
+//     * @return string
+//     */
+//    public function actionTest()
+//    {
+//       echo "rr";
+//       return true;
+//    }
 }

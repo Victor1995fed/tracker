@@ -11,7 +11,21 @@ use yii\data\ActiveDataProvider;
 class TaskController extends Controller
 {
 
-
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+                [
+                    'class' => \yii\filters\ContentNegotiator::className(),
+                    'only' => ['index', 'view'],
+                    'formats' => [
+                    'application/json' => \yii\web\Response::FORMAT_JSON,
+                    ],
+                ],
+                ];
+}
     /**
      * {@inheritdoc}
      */
@@ -35,14 +49,10 @@ class TaskController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Task::find()->with('category','priority')->orderBy('id DESC'),
-            'pagination' => [
-                'pageSize' => 5,
-            ],
-
-        ]);
-        return $this->render('index', ['dataProvider' => $dataProvider]);
+//        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(1,2)->all();
+        return $task;
+//        return $this->render('index', ['dataProvider' => $dataProvider]);
     }
 
     public function actionTest()
