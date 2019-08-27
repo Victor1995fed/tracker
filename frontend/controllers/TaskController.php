@@ -49,8 +49,13 @@ class TaskController extends Controller
      */
     public function actionIndex()
     {
+
 //        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(1,2)->all();
+        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
+//
+//        $task  = Task::find()->where(['id'=>28])->with('category')->one();
+////return $task;
+//        print_r($task);
         return $task;
 //        return $this->render('index', ['dataProvider' => $dataProvider]);
     }
