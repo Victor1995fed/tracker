@@ -92,9 +92,14 @@ class TaskController extends Controller
 
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $task = $this->findModel($id);
+        $category = $task->category;
+        $priority = $task->priority;
+        return [
+            'task' => $task,
+            'category' => $category,
+            'priority' => $priority
+        ];
     }
 
     protected function findModel($id)
