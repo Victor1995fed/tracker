@@ -46,6 +46,11 @@ return [
         ],
 
     ],
+    'modules' => [
+        'helper' => [
+            'class' => 'app\modules\helper\Helper',
+        ]
+    ],
     'params' => $params,
     'defaultRoute'=> 'task',
 ];

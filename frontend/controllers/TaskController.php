@@ -50,20 +50,16 @@ class TaskController extends Controller
     public function actionIndex()
     {
 
-//        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
-//
-//        $task  = Task::find()->where(['id'=>28])->with('category')->one();
-////return $task;
-//        print_r($task);
+//        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
+        $task = Task::find()->with('category','priority')->orderBy('id DESC')->asArray()->all();
+
         return $task;
-//        return $this->render('index', ['dataProvider' => $dataProvider]);
+
     }
 
     public function actionTest()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-//        {"BTC":{"USD":11290.45,"EUR":10037.03},"ETH":{"USD":267.54,"EUR":238.09}}
         return ["BTC"=>["USD"=>45,"EUR"=>58],"ETH"=>["USD"=>455,"EUR"=>584]];
     }
 

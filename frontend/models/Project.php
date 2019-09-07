@@ -26,6 +26,7 @@ class Project extends ActiveRecord
             [['title'], 'string'],
             [['date'], 'date', 'format' => 'Y-m-d'],
             [['status'], 'string', 'max' => 10],
+            ['description','string']
         ];
 
 
