@@ -6,6 +6,23 @@ use frontend\models\Category;
 
 class CategoryController extends Controller
 {
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => \yii\filters\ContentNegotiator::className(),
+                'only' => ['index', 'view','create'],
+                'formats' => [
+                    'application/json' => \yii\web\Response::FORMAT_JSON,
+                ],
+            ],
+        ];
+    }
+
     public function actions()
     {
         return [
@@ -19,6 +36,12 @@ class CategoryController extends Controller
         ];
     }
 
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+
+        return parent::beforeAction($action);
+    }
     /**
      * Displays homepage.
      *
@@ -26,7 +49,10 @@ class CategoryController extends Controller
      */
     public function actionIndex()
     {
-        return 'test';
+
+        $category = Category::find()->orderBy('id DESC')->asArray()->all();
+
+        return $category;
     }
 
     /**
@@ -37,7 +63,17 @@ class CategoryController extends Controller
     public function actionCreate()
     {
         $model = new Category(); //создаём объект
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $model->load(Yii::$app->request->post(),'');
+        if ($model->validate() && $model->save()) {
+            return ['result'=>true, 'id'=>$model->id];
+        }
+        else{
+            return ['result'=>false, 'message'=>$model->errors];
+        }
+
+
+
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -48,9 +84,8 @@ class CategoryController extends Controller
     }
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $category = $this->findModel($id);
+        return $category;
     }
 
     protected function findModel($id)
