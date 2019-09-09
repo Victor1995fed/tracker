@@ -1,5 +1,8 @@
 <?php
 namespace frontend\controllers;
+use frontend\models\Category;
+use frontend\models\Priorities;
+use frontend\models\Project;
 use Yii;
 use yii\web\Controller;
 use frontend\models\Task;
@@ -19,7 +22,7 @@ class TaskController extends Controller
         return [
                 [
                     'class' => \yii\filters\ContentNegotiator::className(),
-                    'only' => ['index', 'view'],
+                    'only' => ['index', 'view','create','edit'],
                     'formats' => [
                     'application/json' => \yii\web\Response::FORMAT_JSON,
                     ],
@@ -40,6 +43,13 @@ class TaskController extends Controller
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
+    }
+
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+
+        return parent::beforeAction($action);
     }
 
     /**
@@ -70,19 +80,36 @@ class TaskController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Task(); //создаём объект
+        $model = new Task();
         $model->date = date('Y-m-d');
         $status = Yii::$app->request->post('status');
-        if($status === null)
+        if ($status === null)
             $model->status = 'new';
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        $model->load(Yii::$app->request->post(), '');
+        if ($model->validate() && $model->save())
+            return ['result' => true, 'id' => $model->id];
+        else {
+//TODO: Сделать возможность передать валидацию для vue с модели YII
+            return ['result'=>false, 'message'=>$model->errors];
+            }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+
+    }
+
+
+    public function actionEdit()
+    {
+        $category = Category::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
+        $project = Project::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
+        $priority = Priorities::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
+
+        return [
+            'category' => $category,
+            'project' => $project,
+            'priority' => $priority,
+        ];
+
 
     }
 

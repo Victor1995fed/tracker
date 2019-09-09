@@ -62,6 +62,7 @@ class CategoryController extends Controller
      */
     public function actionCreate()
     {
+
         $model = new Category(); //создаём объект
         $model->load(Yii::$app->request->post(),'');
         if ($model->validate() && $model->save()) {

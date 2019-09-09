@@ -27,6 +27,7 @@ class Task extends ActiveRecord
             [['title'], 'string', 'max' => 250],
             [['category_id'], 'integer'    ],
             [['priority_id'], 'integer', 'max' => 4],
+            [['priority_id'], 'required'],
             [['date'], 'date', 'format' => 'Y-m-d'],
             [['status'], 'string', 'max' => 10],
         ];
@@ -50,9 +51,9 @@ class Task extends ActiveRecord
     }
 
     public function getCategory(){
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
     public function getPriority(){
-        return $this->hasOne(Priorities::className(), ['id' => 'priority_id']);
+        return $this->hasOne(Priorities::class, ['id' => 'priority_id']);
     }
 }
