@@ -30,6 +30,9 @@ class Task extends ActiveRecord
             [['priority_id'], 'required'],
             [['date'], 'date', 'format' => 'Y-m-d'],
             [['status'], 'string', 'max' => 10],
+            [['file'],'file',
+                'maxSize' => 1024 * 1024 * 5,
+                'skipOnEmpty' => false]
         ];
     }
 
