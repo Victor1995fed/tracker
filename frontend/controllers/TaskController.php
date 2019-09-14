@@ -1,5 +1,7 @@
 <?php
 namespace frontend\controllers;
+use app\models\Files;
+use app\models\UploadForm;
 use frontend\models\Category;
 use frontend\models\Priorities;
 use frontend\models\Project;
@@ -7,6 +9,7 @@ use Yii;
 use yii\web\Controller;
 use frontend\models\Task;
 use yii\data\ActiveDataProvider;
+use yii\web\UploadedFile;
 
 /**
  * Site controller
@@ -67,12 +70,6 @@ class TaskController extends Controller
 
     }
 
-    public function actionTest()
-    {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return ["BTC"=>["USD"=>45,"EUR"=>58],"ETH"=>["USD"=>455,"EUR"=>584]];
-    }
-
     /**
      * Logs in a user.
      *
@@ -80,6 +77,8 @@ class TaskController extends Controller
      */
     public function actionCreate()
     {
+//        return $_FILES;
+
         $model = new Task();
         $model->date = date('Y-m-d');
         $status = Yii::$app->request->post('status');
@@ -87,8 +86,14 @@ class TaskController extends Controller
             $model->status = 'new';
 
         $model->load(Yii::$app->request->post(), '');
-        if ($model->validate() && $model->save())
-            return ['result' => true, 'id' => $model->id];
+        if ($model->validate() && $model->save()){
+            $warning = null;
+            $fileSave = $this->saveFile($model);
+            if(!$fileSave['result']){
+                $warning = $fileSave['errors'];
+            }
+           return ['result' => true, 'id' => $model->id,'warning'=>$warning];
+        }
         else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
             return ['result'=>false, 'message'=>$model->errors];
@@ -118,10 +123,12 @@ class TaskController extends Controller
         $task = $this->findModel($id);
         $category = $task->category;
         $priority = $task->priority;
+        $files = $task->files;
         return [
             'task' => $task,
             'category' => $category,
-            'priority' => $priority
+            'priority' => $priority,
+            'files' => $files
         ];
     }
 
@@ -132,6 +139,26 @@ class TaskController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function saveFile($model){
+        $uploadForm = new UploadForm();
+        $uploadForm->file = UploadedFile::getInstancesByName( 'file');
+        if ($dataFiles = $uploadForm->upload()) {
+
+            foreach ($dataFiles as $file){
+                $files  = new Files();
+                $files->url = $file['path'];
+                $files->title = $file['name'];
+                $files->uuid = $file['uuid'];
+                $files->save();
+                $files->id;
+                $model->link('files', $files);
+            }
+            return ['result'=>true];
+        }
+        else
+            return ['result'=>false,'errors'=>$uploadForm->errors];
     }
 
 

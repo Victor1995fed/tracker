@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use app\models\Files;
 use Yii;
 use yii\base\Model;
 use yii\db\ActiveRecord;
@@ -29,10 +30,8 @@ class Task extends ActiveRecord
             [['priority_id'], 'integer', 'max' => 4],
             [['priority_id'], 'required'],
             [['date'], 'date', 'format' => 'Y-m-d'],
-            [['status'], 'string', 'max' => 10],
-            [['file'],'file',
-                'maxSize' => 1024 * 1024 * 5,
-                'skipOnEmpty' => false]
+            [['status'], 'string', 'max' => 10]
+
         ];
     }
 
@@ -58,5 +57,10 @@ class Task extends ActiveRecord
     }
     public function getPriority(){
         return $this->hasOne(Priorities::class, ['id' => 'priority_id']);
+    }
+
+    public function getFiles(){
+        return $this->hasMany(Files::class, ['id' => 'files_id'])
+            ->viaTable('task_files', ['task_id' => 'id']);
     }
 }

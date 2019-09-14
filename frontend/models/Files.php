@@ -30,6 +30,7 @@ class Files extends \yii\db\ActiveRecord
         return [
             [['description'], 'string'],
             [['title', 'url'], 'string', 'max' => 255],
+            [['uuid'],'string','max'=>36]
         ];
     }
 
@@ -43,6 +44,8 @@ class Files extends \yii\db\ActiveRecord
             'title' => 'Title',
             'url' => 'Url',
             'description' => 'Description',
+            'uuid' => 'UUID',
         ];
     }
+
 }
