@@ -30,7 +30,10 @@ class Task extends ActiveRecord
             [['priority_id'], 'integer', 'max' => 4],
             [['priority_id'], 'required'],
             [['date'], 'date', 'format' => 'Y-m-d'],
-            [['status'], 'string', 'max' => 10]
+            [['date_start'], 'date', 'format' => 'Y-m-d'],
+            [['date_end'], 'date', 'format' => 'Y-m-d'],
+            [['status'], 'string', 'max' => 10],
+            [['readiness'], 'integer'],
 
         ];
     }
@@ -47,6 +50,8 @@ class Task extends ActiveRecord
             'category_id' => 'Категория',
             'priority_id' => 'Приоритет',
             'date' => 'Дата',
+            'date_start' => 'Дата начала',
+            'date_end' => 'Дата завершения',
         ];
 
 
