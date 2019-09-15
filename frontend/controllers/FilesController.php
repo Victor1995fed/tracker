@@ -7,7 +7,7 @@
  */
 
 namespace frontend\controllers;
-use app\models\Files;
+use app\models\File;
 use Yii;
 use yii\web\Controller;
 class FilesController  extends Controller
@@ -16,7 +16,7 @@ class FilesController  extends Controller
     public function actionDownload($uuid)
     {
         //TODO:: Добавить поле user, для идентификации скачивающего файл
-        $files = new Files();
+        $files = new File();
         $result = $files::find()->select('url')
             ->where(['uuid'=>$uuid])->one();
         return Yii::$app->response->sendFile($result->url);

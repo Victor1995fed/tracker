@@ -1,7 +1,7 @@
 <?php
 
 use frontend\models\Category;
-use frontend\models\Priorities;
+use frontend\models\Priority;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 ?>

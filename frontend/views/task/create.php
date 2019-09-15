@@ -4,7 +4,7 @@
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model \common\models\LoginForm */
 
-use frontend\models\Priorities;
+use frontend\models\Priority;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ]); ?>
 
             <?= $form->field($model, 'priority_id')->dropDownList(
-                ArrayHelper::map(Priorities::find()->all(), 'code', 'title')
+                ArrayHelper::map(Priority::find()->all(), 'code', 'title')
             ) ?>
 
             <?= $form->field($model, 'category_id')->dropDownList(

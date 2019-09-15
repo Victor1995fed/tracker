@@ -10,14 +10,14 @@ use Yii;
  * @property int $id
  * @property string $title
  */
-class Priorities extends \yii\db\ActiveRecord
+class Status extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'priorities';
+        return 'status';
     }
 
     /**

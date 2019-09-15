@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use app\models\Files;
+use app\models\File;
 use Yii;
 use yii\base\Model;
 use yii\db\ActiveRecord;
@@ -61,11 +61,11 @@ class Task extends ActiveRecord
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
     public function getPriority(){
-        return $this->hasOne(Priorities::class, ['id' => 'priority_id']);
+        return $this->hasOne(Priority::class, ['id' => 'priority_id']);
     }
 
-    public function getFiles(){
-        return $this->hasMany(Files::class, ['id' => 'files_id'])
-            ->viaTable('task_files', ['task_id' => 'id']);
+    public function getFile(){
+        return $this->hasMany(File::class, ['id' => 'file_id'])
+            ->viaTable('task_file', ['task_id' => 'id']);
     }
 }

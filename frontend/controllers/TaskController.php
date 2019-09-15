@@ -1,9 +1,9 @@
 <?php
 namespace frontend\controllers;
-use app\models\Files;
+use app\models\File;
 use app\models\UploadForm;
 use frontend\models\Category;
-use frontend\models\Priorities;
+use frontend\models\Priority;
 use frontend\models\Project;
 use Yii;
 use yii\web\Controller;
@@ -77,6 +77,9 @@ class TaskController extends Controller
      */
     public function actionCreate()
     {
+//        $uploadForm = new UploadForm();
+//         $uploadForm->file =  UploadedFile::getInstancesByName( 'fileee');
+//        return $uploadForm->file;
 //        return $_FILES;
 
         $model = new Task();
@@ -107,7 +110,7 @@ class TaskController extends Controller
     {
         $category = Category::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
         $project = Project::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
-        $priority = Priorities::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
+        $priority = Priority::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
 
         return [
             'category' => $category,
@@ -123,7 +126,7 @@ class TaskController extends Controller
         $task = $this->findModel($id);
         $category = $task->category;
         $priority = $task->priority;
-        $files = $task->files;
+        $files = $task->file;
         return [
             'task' => $task,
             'category' => $category,
@@ -143,17 +146,20 @@ class TaskController extends Controller
 
     private function saveFile($model){
         $uploadForm = new UploadForm();
-        $uploadForm->file = UploadedFile::getInstancesByName( 'file');
+
+        $uploadForm->file  = UploadedFile::getInstancesByName( 'file');
+        if(empty($uploadForm->file))
+            return ['result'=>true];
         if ($dataFiles = $uploadForm->upload()) {
 
             foreach ($dataFiles as $file){
-                $files  = new Files();
+                $files  = new File();
                 $files->url = $file['path'];
                 $files->title = $file['name'];
                 $files->uuid = $file['uuid'];
                 $files->save();
                 $files->id;
-                $model->link('files', $files);
+                $model->link('file', $files);
             }
             return ['result'=>true];
         }

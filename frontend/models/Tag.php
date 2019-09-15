@@ -5,21 +5,19 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "files".
+ * This is the model class for table "tags".
  *
  * @property int $id
  * @property string $title
- * @property string $url
- * @property string $description
  */
-class Files extends \yii\db\ActiveRecord
+class Tag extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'files';
+        return 'tag';
     }
 
     /**
@@ -28,9 +26,7 @@ class Files extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['description'], 'string'],
-            [['title', 'url'], 'string', 'max' => 255],
-            [['uuid'],'string','max'=>36]
+            [['title'], 'string', 'max' => 255],
         ];
     }
 
@@ -42,10 +38,6 @@ class Files extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'url' => 'Url',
-            'description' => 'Description',
-            'uuid' => 'UUID',
         ];
     }
-
 }
