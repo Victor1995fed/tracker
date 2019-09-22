@@ -67,13 +67,15 @@ class TaskController extends Controller
 
         $offset = ($page - 1) * $this->pageSize;
         $countTask = Task::find()->count();
+        $pageCount = ceil($countTask / $this->pageSize);
+
 //        return $countTask;
 
 //        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
 
         $task = Task::find()->with('category','priority')->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
 
-        return $task;
+        return ['task'=>$task,'countPage'=>$pageCount];
 
     }
 
