@@ -52,7 +52,7 @@ public function uploadDir(){
                 if(FileHelper::createDirectory( $this->uploadDir().$folder)){
                     $path = $this->uploadDir() . $folder . $uuid . '_' . $file->baseName . '.' . $file->extension;
                     $file->saveAs($path);
-                    $dataFiles[] = ['path'=>$path,'name'=>$file->baseName,'uuid'=>$uuid];
+                    $dataFiles[] = ['path'=>$path,'name'=>$file->baseName . '.' . $file->extension,'uuid'=>$uuid];
 
                 }
             }

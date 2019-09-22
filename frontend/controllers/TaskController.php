@@ -17,6 +17,8 @@ use yii\web\UploadedFile;
 class TaskController extends Controller
 {
 
+    public $pageSize = 5;
+
     /**
      * @inheritdoc
      */
@@ -60,11 +62,16 @@ class TaskController extends Controller
      *
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($page)
     {
 
+        $offset = ($page - 1) * $this->pageSize;
+        $countTask = Task::find()->count();
+//        return $countTask;
+
 //        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
-        $task = Task::find()->with('category','priority')->orderBy('id DESC')->asArray()->all();
+
+        $task = Task::find()->with('category','priority')->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
 
         return $task;
 
@@ -157,6 +164,7 @@ class TaskController extends Controller
                 $files->url = $file['path'];
                 $files->title = $file['name'];
                 $files->uuid = $file['uuid'];
+                $files->date_create = date('Y-m-d');
                 $files->save();
                 $files->id;
                 $model->link('file', $files);

@@ -30,7 +30,8 @@ class File extends \yii\db\ActiveRecord
         return [
             [['description'], 'string'],
             [['title', 'url'], 'string', 'max' => 255],
-            [['uuid'],'string','max'=>36]
+            [['uuid'],'string','max'=>36],
+            [['date_create'], 'date', 'format' => 'Y-m-d']
         ];
     }
 
