@@ -6,9 +6,6 @@ use frontend\models\Project;
 use app\modules\helper\Helper;
 class ProjectController extends Controller
 {
-
-
-
     /**
      * @inheritdoc
      */
@@ -17,7 +14,7 @@ class ProjectController extends Controller
         return [
             [
                 'class' => \yii\filters\ContentNegotiator::className(),
-                'only' => ['index', 'view','create'],
+                'only' => ['index', 'view','create','update'],
                 'formats' => [
                     'application/json' => \yii\web\Response::FORMAT_JSON,
                 ],
@@ -104,6 +101,24 @@ class ProjectController extends Controller
     {
         $project = $this->findModel($id);
         return $project;
+    }
+
+    /**
+     * Updates an existing Project model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+//        return ['er','er'];
+        $model = $this->findModel($id);
+//        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
+        if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
+             return ['result'=>true, 'id'=>$model->id];
+        }
+        return $model;
     }
 
     protected function findModel($id)
