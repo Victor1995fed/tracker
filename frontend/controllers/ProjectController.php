@@ -14,7 +14,7 @@ class ProjectController extends Controller
         return [
             [
                 'class' => \yii\filters\ContentNegotiator::className(),
-                'only' => ['index', 'view','create','update'],
+                'only' => ['index', 'view','create','update','delete'],
                 'formats' => [
                     'application/json' => \yii\web\Response::FORMAT_JSON,
                 ],
@@ -120,6 +120,22 @@ class ProjectController extends Controller
         }
         return $model;
     }
+
+    /**
+     * Deletes an existing Dish model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $dish =  $this->findModel($id);
+//        $dish->unlinkAll('ingredients',true);
+        $dish->delete();
+        return true;
+    }
+
 
     protected function findModel($id)
     {
