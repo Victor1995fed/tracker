@@ -27,7 +27,7 @@ class TaskController extends Controller
         return [
                 [
                     'class' => \yii\filters\ContentNegotiator::className(),
-                    'only' => ['index', 'view','create','edit'],
+                    'only' => ['index', 'view','create','edit','update','delete'],
                     'formats' => [
                     'application/json' => \yii\web\Response::FORMAT_JSON,
                     ],
@@ -142,6 +142,37 @@ class TaskController extends Controller
             'priority' => $priority,
             'files' => $files
         ];
+    }
+
+
+    /**
+     * Deletes an existing Dish model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $model =  $this->findModel($id);
+        $files = $model->file;
+        //Удаление файлов с сервера
+        foreach ($files as $key => $file){
+            if($file['url'] != '')
+                    @unlink($file['url']);
+        }
+        $model->unlinkAll('file',true);
+        $model->delete();
+        return true;
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
+            return ['result'=>true, 'id'=>$model->id];
+        }
+        return $model;
     }
 
     protected function findModel($id)

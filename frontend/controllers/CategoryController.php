@@ -15,7 +15,7 @@ class CategoryController extends Controller
         return [
             [
                 'class' => \yii\filters\ContentNegotiator::className(),
-                'only' => ['index', 'view','create'],
+                'only' => ['index', 'view','create','update'],
                 'formats' => [
                     'application/json' => \yii\web\Response::FORMAT_JSON,
                 ],
@@ -83,10 +83,45 @@ class CategoryController extends Controller
         ]);
 
     }
+
+
+    /**
+     * Updates an existing Category model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+//        return ['er','er'];
+        $model = $this->findModel($id);
+//        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
+        if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
+            return ['result'=>true, 'id'=>$model->id];
+        }
+        return $model;
+    }
+
+
     public function actionView($id)
     {
         $category = $this->findModel($id);
         return $category;
+    }
+
+    /**
+     * Deletes an existing Dish model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $category =  $this->findModel($id);
+        $category->delete();
+        return true;
     }
 
     protected function findModel($id)

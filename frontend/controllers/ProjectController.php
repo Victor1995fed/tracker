@@ -130,9 +130,9 @@ class ProjectController extends Controller
      */
     public function actionDelete($id)
     {
-        $dish =  $this->findModel($id);
+        $project =  $this->findModel($id);
 //        $dish->unlinkAll('ingredients',true);
-        $dish->delete();
+        $project->delete();
         return true;
     }
 
