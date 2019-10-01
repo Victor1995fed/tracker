@@ -29,6 +29,7 @@ class Task extends ActiveRecord
             [['category_id'], 'integer'    ],
             [['priority_id'], 'integer', 'max' => 4],
             [['priority_id'], 'required'],
+            [['project_id'], 'integer'],
             [['date'], 'date', 'format' => 'Y-m-d'],
             [['date_start'], 'date', 'format' => 'Y-m-d'],
             [['date_end'], 'date', 'format' => 'Y-m-d'],
@@ -52,6 +53,7 @@ class Task extends ActiveRecord
             'date' => 'Дата',
             'date_start' => 'Дата начала',
             'date_end' => 'Дата завершения',
+            'project_id' => 'Проект'
         ];
 
 
@@ -60,8 +62,13 @@ class Task extends ActiveRecord
     public function getCategory(){
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
+
     public function getPriority(){
         return $this->hasOne(Priority::class, ['id' => 'priority_id']);
+    }
+
+    public function getProject(){
+        return $this->hasOne(Project::class, ['id' => 'project_id']);
     }
 
     public function getFile(){

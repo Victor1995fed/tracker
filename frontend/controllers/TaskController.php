@@ -17,7 +17,7 @@ use yii\web\UploadedFile;
 class TaskController extends Controller
 {
 
-    public $pageSize = 5;
+    public $pageSize = 10;
 
     /**
      * @inheritdoc
