@@ -33,7 +33,7 @@ class Task extends ActiveRecord
             [['date'], 'date', 'format' => 'Y-m-d'],
             [['date_start'], 'date', 'format' => 'Y-m-d'],
             [['date_end'], 'date', 'format' => 'Y-m-d'],
-            [['status'], 'string', 'max' => 10],
+            [['status_id'], 'integer', 'max' => 10],
             [['readiness'], 'integer'],
 
         ];
@@ -65,6 +65,9 @@ class Task extends ActiveRecord
 
     public function getPriority(){
         return $this->hasOne(Priority::class, ['id' => 'priority_id']);
+    }
+    public function getStatus(){
+        return $this->hasOne(Status::class, ['id' => 'status_id']);
     }
 
     public function getProject(){

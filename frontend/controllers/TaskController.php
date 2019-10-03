@@ -5,6 +5,7 @@ use app\models\UploadForm;
 use frontend\models\Category;
 use frontend\models\Priority;
 use frontend\models\Project;
+use frontend\models\Status;
 use Yii;
 use yii\web\Controller;
 use frontend\models\Task;
@@ -93,9 +94,9 @@ class TaskController extends Controller
 
         $model = new Task();
         $model->date = date('Y-m-d');
-        $status = Yii::$app->request->post('status');
+        $status = Yii::$app->request->post('status_id');
         if ($status === null)
-            $model->status = 'new';
+            $model->status_id = 1;
 
         $model->load(Yii::$app->request->post(), '');
         if ($model->validate() && $model->save()){
@@ -120,11 +121,13 @@ class TaskController extends Controller
         $category = Category::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
         $project = Project::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
         $priority = Priority::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
+        $status = Status::find()->select('title, id, code')->orderBy('id ASC')->asArray()->all();
 
         return [
             'category' => $category,
             'project' => $project,
             'priority' => $priority,
+            'status'=> $status
         ];
 
 
@@ -135,12 +138,14 @@ class TaskController extends Controller
         $task = $this->findModel($id);
         $category = $task->category;
         $priority = $task->priority;
+        $status = $task->status;
         $files = $task->file;
         return [
             'task' => $task,
             'category' => $category,
             'priority' => $priority,
-            'files' => $files
+            'files' => $files,
+            'status'=>$status
         ];
     }
 
