@@ -35,6 +35,8 @@ class Task extends ActiveRecord
             [['date_end'], 'date', 'format' => 'Y-m-d'],
             [['status_id'], 'integer', 'max' => 10],
             [['readiness'], 'integer'],
+            [['parent_id'], 'integer'],
+            [['spending'], 'double', 'max'=>100, 'min'=>0.1],
 
         ];
     }
@@ -53,7 +55,9 @@ class Task extends ActiveRecord
             'date' => 'Дата',
             'date_start' => 'Дата начала',
             'date_end' => 'Дата завершения',
-            'project_id' => 'Проект'
+            'project_id' => 'Проект',
+            'parent_id' => 'Id родительской записи',
+            'spending' => 'Трудозатраты'
         ];
 
 

@@ -87,11 +87,6 @@ class TaskController extends Controller
      */
     public function actionCreate()
     {
-//        $uploadForm = new UploadForm();
-//         $uploadForm->file =  UploadedFile::getInstancesByName( 'fileee');
-//        return $uploadForm->file;
-//        return $_FILES;
-
         $model = new Task();
         $model->date = date('Y-m-d');
         $status = Yii::$app->request->post('status_id');
@@ -140,12 +135,21 @@ class TaskController extends Controller
         $priority = $task->priority;
         $status = $task->status;
         $files = $task->file;
+        $project = $task->project;
+        //Получаем родительскую задачу, если есть
+        if($task->parent_id !== null){
+            $parentTask = $this->findModel($task->parent_id);
+        }
+
+
         return [
             'task' => $task,
             'category' => $category,
             'priority' => $priority,
             'files' => $files,
-            'status'=>$status
+            'status'=>$status,
+            'project'=>$project,
+            'parent_task'=>$parentTask ?? null
         ];
     }
 
@@ -161,6 +165,7 @@ class TaskController extends Controller
     {
         $model =  $this->findModel($id);
         $files = $model->file;
+        //TODO:: Вынести удаление файлов с сервера в отдельную функцию в модель File
         //Удаление файлов с сервера
         foreach ($files as $key => $file){
             if($file['url'] != '')
@@ -173,11 +178,22 @@ class TaskController extends Controller
 
     public function actionUpdate($id)
     {
+
         $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
-            return ['result'=>true, 'id'=>$model->id];
+        if ($model->load(Yii::$app->request->post(),'') ) {
+            //Сумма трудозатрат
+            $spending = Yii::$app->request->post('spending');
+            if ($spending !== null && $spending > 0){
+                $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
+            }
+//            && $model->save()
+            if($model->save()){
+                return ['result'=>true, 'id'=>$model->id];
+            }
         }
+
         return $model;
+
     }
 
     protected function findModel($id)

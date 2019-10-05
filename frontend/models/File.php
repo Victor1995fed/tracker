@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use frontend\models\Task;
 use Yii;
 
 /**
@@ -47,6 +48,11 @@ class File extends \yii\db\ActiveRecord
             'description' => 'Description',
             'uuid' => 'UUID',
         ];
+    }
+
+    public function getTask(){
+        return $this->hasMany(Task::class, ['id' => 'task_id'])
+            ->viaTable('task_file', ['file_id' => 'id']);
     }
 
 }
