@@ -27,6 +27,8 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             [['title'], 'string', 'max' => 255],
+            [['title'], 'required'],
+            [['parent_id'], 'integer'],
         ];
     }
 
@@ -38,12 +40,8 @@ class Category extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
+            'parent_id' => 'ID родительской категории'
         ];
     }
 
-//    public function getArticles(){
-//
-//        return $this->hasMany(Article::className(), ['category_id' => 'id']);
-//
-//    }
 }

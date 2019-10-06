@@ -49,8 +49,9 @@ class CategoryController extends Controller
      */
     public function actionIndex()
     {
-
-        $category = Category::find()->orderBy('id DESC')->asArray()->all();
+//        $category = Category::find()->orderBy('id DESC')->asArray()->all();
+        //Список категорий с родительскими
+        $category = Category::find()->select(['CAT.title catTitle', 'CAT.id catId', 'PARENT.title parentTitle', 'PARENT.id parentId'])->from('category CAT')->leftJoin('category PARENT','CAT.parent_id = PARENT.id')->asArray()->all();
 
         return $category;
     }
@@ -62,7 +63,6 @@ class CategoryController extends Controller
      */
     public function actionCreate()
     {
-
         $model = new Category(); //создаём объект
         $model->load(Yii::$app->request->post(),'');
         if ($model->validate() && $model->save()) {
@@ -71,16 +71,6 @@ class CategoryController extends Controller
         else{
             return ['result'=>false, 'message'=>$model->errors];
         }
-
-
-
-        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
 
     }
 
@@ -106,8 +96,16 @@ class CategoryController extends Controller
 
     public function actionView($id)
     {
+
         $category = $this->findModel($id);
-        return $category;
+        //Получаем родительскую задачу, если есть
+        if($category->parent_id !== null){
+            $parentCategory = $this->findModel($category->parent_id);
+        }
+        return [
+            'category' => $category,
+            'parentCategory' => $parentCategory ?? null
+        ];
     }
 
     /**

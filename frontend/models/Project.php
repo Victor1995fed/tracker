@@ -25,7 +25,7 @@ class Project extends ActiveRecord
             [['title'], 'required'],
             [['title'], 'string'],
             [['date'], 'date', 'format' => 'Y-m-d'],
-            [['status'], 'string', 'max' => 10],
+            [['status_id'], 'integer'],
             ['description','string']
         ];
 
@@ -46,5 +46,10 @@ class Project extends ActiveRecord
         ];
 
 
+    }
+
+
+    public function getStatus(){
+        return $this->hasOne(Status::class, ['id' => 'status_id']);
     }
 }

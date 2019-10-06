@@ -77,7 +77,7 @@ class TaskController extends Controller
         $task = Task::find()->with('category','priority')->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
 
         return ['task'=>$task,'countPage'=>$pageCount];
-
+//ERROR:
     }
 
     /**
@@ -183,13 +183,15 @@ class TaskController extends Controller
         if ($model->load(Yii::$app->request->post(),'') ) {
             //Сумма трудозатрат
             $spending = Yii::$app->request->post('spending');
-            if ($spending !== null && $spending > 0){
+            if ($spending !== null){
                 $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
             }
 //            && $model->save()
             if($model->save()){
                 return ['result'=>true, 'id'=>$model->id];
             }
+            else
+                return $model->errors;
         }
 
         return $model;

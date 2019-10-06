@@ -36,7 +36,7 @@ class Task extends ActiveRecord
             [['status_id'], 'integer', 'max' => 10],
             [['readiness'], 'integer'],
             [['parent_id'], 'integer'],
-            [['spending'], 'double', 'max'=>100, 'min'=>0.1],
+            [['spending'], 'double', 'max'=>100, 'min'=>0.0],
 
         ];
     }

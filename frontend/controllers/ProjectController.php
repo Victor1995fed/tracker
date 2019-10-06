@@ -1,5 +1,6 @@
 <?php
 namespace frontend\controllers;
+use frontend\models\Status;
 use Yii;
 use yii\web\Controller;
 use frontend\models\Project;
@@ -14,7 +15,7 @@ class ProjectController extends Controller
         return [
             [
                 'class' => \yii\filters\ContentNegotiator::className(),
-                'only' => ['index', 'view','create','update','delete'],
+                'only' => ['index', 'view','create','update','delete','status'],
                 'formats' => [
                     'application/json' => \yii\web\Response::FORMAT_JSON,
                 ],
@@ -54,7 +55,6 @@ class ProjectController extends Controller
         $project = Project::find()->orderBy('id DESC')->asArray()->all();
 
         return $project;
-//        return $this->render('index');
     }
 
     public function actionTest()
@@ -69,18 +69,13 @@ class ProjectController extends Controller
      */
     public function actionCreate()
     {
-//return 0;
 
-//        return $_POST;
-//        return Yii::$app->request->post();
-//        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-//return Yii::$app->request->post();
         $model = new Project(); //создаём объект
 
         $model->date = date('Y-m-d');
-//        return Yii::$app->request->post();
-//        print_r(Yii::$app->request->post());
-//        return 'test';
+        $status = Yii::$app->request->post('status_id');
+        if ($status === null)
+            $model->status_id = 7;
         $model->load(Yii::$app->request->post(),'');
 
         if ($model->validate() && $model->save()) {
@@ -88,9 +83,6 @@ class ProjectController extends Controller
         } else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
 
-//            return Helper::setValidations($model->rules());
-//            return $model->validators;
-            // данные не корректны: $errors - массив содержащий сообщения об ошибках
            return ['result'=>false, 'message'=>$model->errors];
         }
 
@@ -100,7 +92,12 @@ class ProjectController extends Controller
     public function actionView($id)
     {
         $project = $this->findModel($id);
-        return $project;
+        $status = $project->status;
+        return
+            [
+              'project' => $project,
+              'status' => $status,
+            ];
     }
 
     /**
@@ -118,7 +115,15 @@ class ProjectController extends Controller
         if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
              return ['result'=>true, 'id'=>$model->id];
         }
+
         return $model;
+    }
+
+    public function actionStatus()
+    {
+     $status = Status::find()->where(['id' => [7,8]])->all();
+     return $status;
+
     }
 
     /**
