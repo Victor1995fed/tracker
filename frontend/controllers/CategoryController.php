@@ -1,10 +1,10 @@
 <?php
 namespace frontend\controllers;
 use Yii;
-use yii\web\Controller;
+use yii\filters\VerbFilter;
 use frontend\models\Category;
 
-class CategoryController extends Controller
+class CategoryController extends AbstractApiController
 {
 
     /**
@@ -12,15 +12,21 @@ class CategoryController extends Controller
      */
     public function behaviors()
     {
-        return [
-            [
-                'class' => \yii\filters\ContentNegotiator::className(),
-                'only' => ['index', 'view','create','update'],
-                'formats' => [
-                    'application/json' => \yii\web\Response::FORMAT_JSON,
-                ],
+
+        $behaviors = parent::behaviors();
+
+        $behaviors['verbs'] = [
+            'class' => VerbFilter::class,
+            'actions' => [
+                'index'  => ['get'],
+                'view'   => ['get'],
+                'create' => ['post'],
+                'update' => ['put'],
+                'delete' => ['delete'],
             ],
         ];
+
+        return $behaviors;
     }
 
     public function actions()
@@ -38,7 +44,6 @@ class CategoryController extends Controller
 
     public function beforeAction($action)
     {
-        $this->enableCsrfValidation = false;
 
         return parent::beforeAction($action);
     }
@@ -84,13 +89,16 @@ class CategoryController extends Controller
      */
     public function actionUpdate($id)
     {
+
 //        return ['er','er'];
         $model = $this->findModel($id);
 //        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
-        if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
+        if ($model->load(Yii::$app->request->getBodyParams(),'') && $model->save()) {
             return ['result'=>true, 'id'=>$model->id];
         }
-        return $model;
+        else
+            return $model->errors;
+//        return $model;
     }
 
 
