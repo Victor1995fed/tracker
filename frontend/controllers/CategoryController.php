@@ -6,6 +6,7 @@ use frontend\models\Category;
 
 class CategoryController extends AbstractApiController
 {
+    public $modelClass = 'frontend\models\Category';
 
     /**
      * @inheritdoc
