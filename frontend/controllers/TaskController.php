@@ -94,6 +94,7 @@ class TaskController extends Controller
             $model->status_id = 1;
 
         $model->load(Yii::$app->request->post(), '');
+
         if ($model->validate() && $model->save()){
             $warning = null;
             $fileSave = $this->saveFile($model);
