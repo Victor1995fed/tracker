@@ -7,6 +7,7 @@ use frontend\models\Priority;
 use frontend\models\Project;
 use frontend\models\Status;
 use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use frontend\models\Task;
 use yii\data\ActiveDataProvider;
@@ -15,7 +16,7 @@ use yii\web\UploadedFile;
 /**
  * Site controller
  */
-class TaskController extends Controller
+class TaskController extends AbstractApiController
 {
 
     public $pageSize = 10;
@@ -25,16 +26,20 @@ class TaskController extends Controller
      */
     public function behaviors()
     {
-        return [
-                [
-                    'class' => \yii\filters\ContentNegotiator::className(),
-                    'only' => ['index', 'view','create','edit','update','delete'],
-                    'formats' => [
-                    'application/json' => \yii\web\Response::FORMAT_JSON,
-                    ],
-                ],
-                ];
-}
+        $behaviors = parent::behaviors();
+        $behaviors['verbs'] = [
+            'class' => VerbFilter::class,
+            'actions' => [
+                'index'  => ['get'],
+                'view'   => ['get'],
+                'create' => ['post'],
+                'update' => ['put'],
+                'delete' => ['delete'],
+                'edit' => ['get']
+            ],
+        ];
+        return $behaviors;
+    }
     /**
      * {@inheritdoc}
      */
@@ -53,8 +58,6 @@ class TaskController extends Controller
 
     public function beforeAction($action)
     {
-        $this->enableCsrfValidation = false;
-
         return parent::beforeAction($action);
     }
 
@@ -78,6 +81,31 @@ class TaskController extends Controller
 
         return ['task'=>$task,'countPage'=>$pageCount];
 //ERROR:
+    }
+
+    public function actionView($id)
+    {
+        $task = $this->findModel($id);
+        $category = $task->category;
+        $priority = $task->priority;
+        $status = $task->status;
+        $files = $task->file;
+        $project = $task->project;
+        //Получаем родительскую задачу, если есть
+        if($task->parent_id !== null){
+            $parentTask = $this->findModel($task->parent_id);
+        }
+
+
+        return [
+            'task' => $task,
+            'category' => $category,
+            'priority' => $priority,
+            'files' => $files,
+            'status'=>$status,
+            'project'=>$project,
+            'parent_task'=>$parentTask ?? null
+        ];
     }
 
     /**
@@ -107,10 +135,51 @@ class TaskController extends Controller
 //TODO: Сделать возможность передать валидацию для vue с модели YII
             return ['result'=>false, 'message'=>$model->errors];
             }
+    }
 
+
+    public function actionUpdate($id)
+    {
+
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post(),'') ) {
+            //Сумма трудозатрат
+            $spending = Yii::$app->request->post('spending');
+            if ($spending !== null){
+                $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
+            }
+            if($model->save()){
+                return ['result'=>true, 'id'=>$model->id];
+            }
+            else
+                return $model->errors;
+        }
+
+        return $model;
 
     }
 
+    /**
+     * Deletes an existing Dish model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $model =  $this->findModel($id);
+        $files = $model->file;
+        //TODO:: Вынести удаление файлов с сервера в отдельную функцию в модель File
+        //Удаление файлов с сервера
+        foreach ($files as $key => $file){
+            if($file['url'] != '')
+                @unlink($file['url']);
+        }
+        $model->unlinkAll('file',true);
+        $model->delete();
+        return true;
+    }
 
     public function actionEdit()
     {
@@ -129,75 +198,6 @@ class TaskController extends Controller
 
     }
 
-    public function actionView($id)
-    {
-        $task = $this->findModel($id);
-        $category = $task->category;
-        $priority = $task->priority;
-        $status = $task->status;
-        $files = $task->file;
-        $project = $task->project;
-        //Получаем родительскую задачу, если есть
-        if($task->parent_id !== null){
-            $parentTask = $this->findModel($task->parent_id);
-        }
-
-
-        return [
-            'task' => $task,
-            'category' => $category,
-            'priority' => $priority,
-            'files' => $files,
-            'status'=>$status,
-            'project'=>$project,
-            'parent_task'=>$parentTask ?? null
-        ];
-    }
-
-
-    /**
-     * Deletes an existing Dish model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $model =  $this->findModel($id);
-        $files = $model->file;
-        //TODO:: Вынести удаление файлов с сервера в отдельную функцию в модель File
-        //Удаление файлов с сервера
-        foreach ($files as $key => $file){
-            if($file['url'] != '')
-                    @unlink($file['url']);
-        }
-        $model->unlinkAll('file',true);
-        $model->delete();
-        return true;
-    }
-
-    public function actionUpdate($id)
-    {
-
-        $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post(),'') ) {
-            //Сумма трудозатрат
-            $spending = Yii::$app->request->post('spending');
-            if ($spending !== null){
-                $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
-            }
-//            && $model->save()
-            if($model->save()){
-                return ['result'=>true, 'id'=>$model->id];
-            }
-            else
-                return $model->errors;
-        }
-
-        return $model;
-
-    }
 
     protected function findModel($id)
     {

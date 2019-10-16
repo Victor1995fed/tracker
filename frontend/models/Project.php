@@ -24,7 +24,7 @@ class Project extends ActiveRecord
         return [
             [['title'], 'required'],
             [['title'], 'string'],
-            [['date'], 'date', 'format' => 'Y-m-d'],
+            [['date'], 'date', 'format' => 'yyyy-MM-dd'],
             [['status_id'], 'integer'],
             ['description','string']
         ];

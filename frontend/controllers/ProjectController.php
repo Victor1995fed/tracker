@@ -2,25 +2,30 @@
 namespace frontend\controllers;
 use frontend\models\Status;
 use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use frontend\models\Project;
 use app\modules\helper\Helper;
-class ProjectController extends Controller
+class ProjectController extends AbstractApiController
 {
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
-        return [
-            [
-                'class' => \yii\filters\ContentNegotiator::className(),
-                'only' => ['index', 'view','create','update','delete','status'],
-                'formats' => [
-                    'application/json' => \yii\web\Response::FORMAT_JSON,
-                ],
+        $behaviors = parent::behaviors();
+        $behaviors['verbs'] = [
+            'class' => VerbFilter::class,
+            'actions' => [
+                'index'  => ['get'],
+                'view'   => ['get'],
+                'create' => ['post'],
+                'update' => ['put'],
+                'delete' => ['delete'],
+                'status'=> ['get']
             ],
         ];
+        return $behaviors;
     }
 
     public function actions()
@@ -39,7 +44,7 @@ class ProjectController extends Controller
 
     public function beforeAction($action)
     {
-            $this->enableCsrfValidation = false;
+//            $this->enableCsrfValidation = false;
 
             return parent::beforeAction($action);
     }
@@ -57,16 +62,18 @@ class ProjectController extends Controller
         return $project;
     }
 
-    public function actionTest()
+
+    public function actionView($id)
     {
-        return 'test';
+        $project = $this->findModel($id);
+        $status = $project->status;
+        return
+            [
+                'project' => $project,
+                'status' => $status,
+            ];
     }
 
-    /**
-     * Logs in a user.
-     *
-     * @return mixed
-     */
     public function actionCreate()
     {
 
@@ -89,16 +96,7 @@ class ProjectController extends Controller
 
 
     }
-    public function actionView($id)
-    {
-        $project = $this->findModel($id);
-        $status = $project->status;
-        return
-            [
-              'project' => $project,
-              'status' => $status,
-            ];
-    }
+
 
     /**
      * Updates an existing Project model.
@@ -112,7 +110,7 @@ class ProjectController extends Controller
 //        return ['er','er'];
         $model = $this->findModel($id);
 //        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
-        if ($model->load(Yii::$app->request->post(),'') && $model->save()) {
+        if ($model->load(Yii::$app->request->getBodyParams(),'') && $model->save()) {
              return ['result'=>true, 'id'=>$model->id];
         }
 

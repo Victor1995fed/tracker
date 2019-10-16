@@ -13,7 +13,6 @@ class CategoryController extends AbstractApiController
      */
     public function behaviors()
     {
-
         $behaviors = parent::behaviors();
 
         $behaviors['verbs'] = [
@@ -45,7 +44,6 @@ class CategoryController extends AbstractApiController
 
     public function beforeAction($action)
     {
-
         return parent::beforeAction($action);
     }
     /**
@@ -62,11 +60,21 @@ class CategoryController extends AbstractApiController
         return $category;
     }
 
-    /**
-     * Logs in a user.
-     *
-     * @return mixed
-     */
+
+    public function actionView($id)
+    {
+
+        $category = $this->findModel($id);
+        //Получаем родительскую задачу, если есть
+        if($category->parent_id !== null){
+            $parentCategory = $this->findModel($category->parent_id);
+        }
+        return [
+            'category' => $category,
+            'parentCategory' => $parentCategory ?? null
+        ];
+    }
+
     public function actionCreate()
     {
         $model = new Category(); //создаём объект
@@ -103,19 +111,7 @@ class CategoryController extends AbstractApiController
     }
 
 
-    public function actionView($id)
-    {
 
-        $category = $this->findModel($id);
-        //Получаем родительскую задачу, если есть
-        if($category->parent_id !== null){
-            $parentCategory = $this->findModel($category->parent_id);
-        }
-        return [
-            'category' => $category,
-            'parentCategory' => $parentCategory ?? null
-        ];
-    }
 
     /**
      * Deletes an existing Dish model.
