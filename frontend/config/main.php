@@ -17,11 +17,16 @@ return [
             'baseUrl'=> '',
             'parsers' => [
                 'multipart/form-data' => 'yii\web\MultipartFormDataParser'
-            ]
+            ],
+
+        ],
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
         ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
+            'enableSession' =>false,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
         'session' => [

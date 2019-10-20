@@ -57,6 +57,7 @@ class TestController extends Controller
                     'create' => ['post'],
                     'update' => ['put'],
                     'delete' => ['delete'],
+                    'auth' => ['post'],
                 ],
             ];
         // В это место мы будем добавлять поведения (читай ниже)
@@ -100,7 +101,17 @@ class TestController extends Controller
     {
 
 
-        return ['ldfld'];
+        return true;
+    }
+
+    public function actionAuth()
+    {
+
+
+        return [
+            'access_token' => 'sdsdderterrt',
+            'username' => 'admin'
+        ];
     }
 
 

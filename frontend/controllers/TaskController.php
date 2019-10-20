@@ -35,7 +35,8 @@ class TaskController extends AbstractApiController
                 'create' => ['post'],
                 'update' => ['put'],
                 'delete' => ['delete'],
-                'edit' => ['get']
+                'edit' => ['get'],
+                'test' => ['post']
             ],
         ];
         return $behaviors;
@@ -77,7 +78,7 @@ class TaskController extends AbstractApiController
 
 //        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
 
-        $task = Task::find()->with('category','priority')->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
+        $task = Task::find()->with('category','priority','project','status')->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
 
         return ['task'=>$task,'countPage'=>$pageCount];
 //ERROR:
@@ -196,6 +197,12 @@ class TaskController extends AbstractApiController
         ];
 
 
+    }
+
+
+    public function actionTest()
+    {
+        return ['token'=>'sdwfrfeg', 'user'=>'admin'];
     }
 
 
