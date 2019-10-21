@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use app\models\Session;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -53,9 +54,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-//            if ($this->isNewRecord) {
             $this->auth_key = Yii::$app->getSecurity()->generateRandomString();
-//            }
             return true;
         }
         return false;
@@ -86,7 +85,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::findOne(['auth_key' => $token]);
+        $session =  Session::findOne(['token' => $token]);
+        if($session)
+            return static::findOne(['id' => $session->user_id]);
+//        return static::findOne(['auth_key' => $token]);
 //        return true;
 //        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }

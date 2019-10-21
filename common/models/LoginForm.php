@@ -1,6 +1,8 @@
 <?php
 namespace common\models;
 
+use app\models\Session;
+use Faker\Provider\Uuid;
 use Yii;
 use yii\base\Model;
 
@@ -58,8 +60,11 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            $this->_user->save(false);
-            $this->token = $this->_user["auth_key"];
+            $session = new Session();
+            $session->user_id = $this->_user["id"];
+            $session->token = $this->generateAuthKey();
+            $session->save(false);
+            $this->token = $session->token;
             return true;
         }
         
@@ -78,6 +83,14 @@ class LoginForm extends Model
         }
 
         return $this->_user;
+    }
+
+    /**
+     * Generates "remember me" authentication key
+     */
+    public function generateAuthKey()
+    {
+        return Yii::$app->security->generateRandomString();
     }
 
 }

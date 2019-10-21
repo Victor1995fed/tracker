@@ -2,8 +2,10 @@
 
 namespace frontend\controllers;
 
+//use Cassandra\Uuid;
 use common\models\LoginForm;
 use common\models\User;
+use Faker\Provider\Uuid;
 use Yii;
 use yii\filters\VerbFilter;
 
