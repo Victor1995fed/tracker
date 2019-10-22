@@ -42,7 +42,7 @@ class UserController extends AbstractApiController
 //        Yii::$app->request->getBodyParams()
 //        return Yii::$app->request->getBodyParams();
         if ($model->load(Yii::$app->request->post(), '') && $model->login()) {
-            return $model->token;
+            return ['user'=>$model->username,'token'=>$model->token];
         } else {
             throw new \yii\web\ForbiddenHttpException();
 

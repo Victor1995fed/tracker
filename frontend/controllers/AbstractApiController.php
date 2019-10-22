@@ -15,10 +15,10 @@ class AbstractApiController extends Controller
     {
         return [
 //            //TODO:: Раскомментить авторизацию
-//            'authenticator'=>[
-//                'class'=>HttpBearerAuth::class,
-//                'except' => ['options','login'],
-//            ],
+            'authenticator'=>[
+                'class'=>HttpBearerAuth::class,
+                'except' => ['options','login'],
+            ],
 
         ];
     }
@@ -28,6 +28,8 @@ class AbstractApiController extends Controller
     {
         if (Yii::$app->getRequest()->getMethod() === 'OPTIONS') {
             Yii::$app->getResponse()->getHeaders()->set('Allow', 'POST GET PUT DELETE');
+            Yii::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', '*');
+
             Yii::$app->end();
             return true;
 
