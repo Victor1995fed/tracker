@@ -16,7 +16,8 @@ return [
             'csrfParam' => '_csrf-frontend',
             'baseUrl'=> '',
             'parsers' => [
-                'multipart/form-data' => 'yii\web\MultipartFormDataParser'
+                'multipart/form-data' => 'yii\web\MultipartFormDataParser',
+                'application/json' => 'yii\web\JsonParser'
             ],
 
         ],

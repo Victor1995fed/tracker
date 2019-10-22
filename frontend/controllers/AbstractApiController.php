@@ -14,11 +14,11 @@ class AbstractApiController extends Controller
     public function behaviors()
     {
         return [
-            //TODO:: Раскомментить авторизацию
-            'authenticator'=>[
-                'class'=>HttpBearerAuth::class,
-                'except' => ['options','login'],
-            ],
+//            //TODO:: Раскомментить авторизацию
+//            'authenticator'=>[
+//                'class'=>HttpBearerAuth::class,
+//                'except' => ['options','login'],
+//            ],
 
         ];
     }
