@@ -6,6 +6,7 @@ use frontend\models\Category;
 use frontend\models\Priority;
 use frontend\models\Project;
 use frontend\models\Status;
+use frontend\models\TaskSearch;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -36,7 +37,7 @@ class TaskController extends AbstractApiController
                 'update' => ['put'],
                 'delete' => ['delete'],
                 'edit' => ['get'],
-                'test' => ['post']
+                'test' => ['get']
             ],
         ];
         return $behaviors;
@@ -82,6 +83,18 @@ class TaskController extends AbstractApiController
 
         return ['task'=>$task,'countPage'=>$pageCount];
 //ERROR:
+    }
+
+    public function actionTest()
+    {
+        $searchModel = new TaskSearch();
+//        return Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $dataProvider;
+//        return $this->render('index', [
+//            'searchModel' => $searchModel,
+//            'dataProvider' => $dataProvider,
+//        ]);
     }
 
     public function actionView($id)
@@ -200,10 +213,7 @@ class TaskController extends AbstractApiController
     }
 
 
-    public function actionTest()
-    {
-        return ['token'=>'sdwfrfeg', 'user'=>'admin'];
-    }
+
 
 
     protected function findModel($id)
