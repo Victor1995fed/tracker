@@ -32,7 +32,7 @@ class File extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['title', 'url'], 'string', 'max' => 255],
             [['uuid'],'string','max'=>36],
-            [['date_create'], 'date', 'format' => 'Y-m-d']
+            [['date_create'], 'date', 'format' => 'yyyy-MM-dd']
         ];
     }
 

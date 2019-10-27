@@ -2,6 +2,7 @@
 namespace frontend\controllers;
 use app\models\File;
 use app\models\UploadForm;
+use app\modules\helpers\UploadFileExt;
 use frontend\models\Category;
 use frontend\models\Priority;
 use frontend\models\Project;
@@ -87,6 +88,9 @@ class TaskController extends AbstractApiController
 
     public function actionTest()
     {
+
+
+
         $searchModel = new TaskSearch();
 //        return Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -154,7 +158,6 @@ class TaskController extends AbstractApiController
 
     public function actionUpdate($id)
     {
-
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post(),'') ) {
             //Сумма трудозатрат
@@ -163,6 +166,14 @@ class TaskController extends AbstractApiController
                 $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
             }
             if($model->save()){
+                $warning = null;
+                $fileSave = $this->saveFile($model);
+                if(!$fileSave['result']){
+                    $warning = $fileSave['errors'];
+                }
+                //TODO:: Добавить тесты для этого контроллера
+                return ['result' => true, 'id' => $model->id,'warning'=>$warning];
+                //TODO:: Добавить сохранение файлов
                 return ['result'=>true, 'id'=>$model->id];
             }
             else
@@ -228,7 +239,9 @@ class TaskController extends AbstractApiController
     private function saveFile($model){
         $uploadForm = new UploadForm();
 
-        $uploadForm->file  = UploadedFile::getInstancesByName( 'file');
+//        $uploadForm->file  = UploadedFile::getInstancesByName( 'file');
+        $uploadForm->file  = UploadFileExt::getInstancesByName( 'file');
+//        throw new \Exception(serialize($uploadForm->file));
         if(empty($uploadForm->file))
             return ['result'=>true];
         if ($dataFiles = $uploadForm->upload()) {
@@ -242,6 +255,7 @@ class TaskController extends AbstractApiController
                 $files->save();
                 $files->id;
                 $model->link('file', $files);
+                //TODO:: Добавить обработку ошибок!!!
             }
             return ['result'=>true];
         }

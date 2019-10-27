@@ -45,24 +45,32 @@ public function uploadDir(){
     public function upload()
     {
         if ($this->validate()) {
-            $dataFiles = [];
-            foreach ($this->file as $file){
-                $folder =date("Y-m-d").'/';
-                $uuid = Uuid::uuid();
-                if(FileHelper::createDirectory( $this->uploadDir().$folder)){
-                    $path = $this->uploadDir() . $folder . $uuid . '_' . $file->baseName . '.' . $file->extension;
-                    $file->saveAs($path);
-                    $dataFiles[] = ['path'=>$path,'name'=>$file->baseName . '.' . $file->extension,'uuid'=>$uuid];
 
+            $dataFiles = [];
+            $folder = date("Y-m-d").'/';
+            if(FileHelper::createDirectory( $this->uploadDir().$folder)){
+                foreach ($this->file as $file){
+                    $uuid = Uuid::uuid();
+                    $path = $this->uploadDir() . $folder . $uuid . '_' . $file->baseName . '.' . $file->extension;
+                    if(Yii::$app->request->isPost){
+                        //FIXME:: Нет поддержки сохранения через PUT
+                        $file->saveAs($path);
+                    }
+                    elseif(Yii::$app->request->isPut){
+                        $file->saveFilePut($path);
+//                        print_r($file->baseName);
+
+                    }
+                    $dataFiles[] = ['path'=>$path,'name'=>$file->baseName . '.' . $file->extension,'uuid'=>$uuid];
                 }
             }
+
                 return $dataFiles;
 
         } else {
             return false;
         }
     }
-
 
 
 }

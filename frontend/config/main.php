@@ -58,7 +58,7 @@ return [
     ],
     'modules' => [
         'helper' => [
-            'class' => 'app\modules\helper\Helper',
+            'class' => 'app\modules\helper\Helpers',
         ]
     ],
     'params' => $params,

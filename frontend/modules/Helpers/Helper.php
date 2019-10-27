@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\helper;
+namespace app\modules\helpers;
 use \yii\base\Module;
 
 class Helper extends Module

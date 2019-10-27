@@ -10,7 +10,7 @@ namespace frontend\controllers;
 use app\models\File;
 use Yii;
 use yii\web\Controller;
-class FileController  extends Controller
+class FileController  extends AbstractApiController
 {
 
     /**
