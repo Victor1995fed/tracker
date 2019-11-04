@@ -86,11 +86,9 @@ class TaskController extends AbstractApiController
 //ERROR:
     }
 
-    public function actionTest()
+    public function actionTest($page)
     {
-
-
-
+//        return Yii::$app->request->queryParams;
         $searchModel = new TaskSearch();
 //        return Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -133,6 +131,7 @@ class TaskController extends AbstractApiController
      */
     public function actionCreate()
     {
+//        TODO: Добавить исключения
         $model = new Task();
         $model->date = date('Y-m-d');
         $status = Yii::$app->request->post('status_id');
@@ -173,8 +172,6 @@ class TaskController extends AbstractApiController
                 }
                 //TODO:: Добавить тесты для этого контроллера
                 return ['result' => true, 'id' => $model->id,'warning'=>$warning];
-                //TODO:: Добавить сохранение файлов
-                return ['result'=>true, 'id'=>$model->id];
             }
             else
                 return $model->errors;
@@ -237,6 +234,7 @@ class TaskController extends AbstractApiController
     }
 
     private function saveFile($model){
+        //    TODO:: Добавить проверку уникальности загружаемых файлов, через md5_file
         $uploadForm = new UploadForm();
 
 //        $uploadForm->file  = UploadedFile::getInstancesByName( 'file');

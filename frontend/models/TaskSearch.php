@@ -1,7 +1,5 @@
 <?php
 namespace frontend\models;
-
-
 use yii\data\ActiveDataProvider;
 
 class TaskSearch extends Task
@@ -23,12 +21,11 @@ class TaskSearch extends Task
         //Поиск по id
 //        $query = Task::find()->where(['id'=>$params['id']]);
 
-
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
                 'pageSize' => 2,
+                'page' => $params['page']
             ]
         ]);
 
@@ -49,21 +46,9 @@ class TaskSearch extends Task
             ]
         ]);
 
-        if (!($this->load($params) && $this->validate())) {
+        if (!($this->load($params,'') && $this->validate())) {
             return $dataProvider;
         }
-
-        $this->addCondition($query, 'id');
-//        $this->addCondition($query, 'first_name', true);
-//        $this->addCondition($query, 'last_name', true);
-//        $this->addCondition($query, 'country_id');
-
-        /* Настроим правила фильтрации */
-
-        // фильтр по имени
-//        $query->andWhere('first_name LIKE "%' . $this->fullName . '%" ' .
-//            'OR last_name LIKE "%' . $this->fullName . '%"'
-//        );
 
         return $dataProvider;
     }

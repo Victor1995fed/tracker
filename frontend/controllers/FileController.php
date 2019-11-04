@@ -29,6 +29,7 @@ class FileController  extends AbstractApiController
         ];
     }
 
+
     public function actionDownload($uuid)
     {
         //TODO:: Добавить поле user, для идентификации скачивающего файл

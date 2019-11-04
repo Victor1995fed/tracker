@@ -40,6 +40,12 @@ return [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                    'logFile' => '@runtime/logs/error.log'
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'categories' => ['yii\db\Command::query'],
+                    'logFile' => '@runtime/logs/db.log'
                 ],
             ],
         ],
