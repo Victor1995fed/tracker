@@ -24,14 +24,15 @@ class TaskSearch extends Task
 //        return $params;
 //        return $this->period;
 //        return $this->getDate($this->period);
-        $query = Task::find()->joinWith('status');
+//        $query = Task::find()->joinWith(['status','category','priority','project']);
+        $query = Task::find()->joinWith(['status','category','priority','project'])->asArray();
         //Поиск по id
 //        $query = Task::find()->where(['id'=>$params['id']]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 3,
+                'pageSize' => 10,
                 'page' => (int) --$params['page']
             ]
         ]);
@@ -41,15 +42,9 @@ class TaskSearch extends Task
          * Важно: должна быть выполнена раньше $this->load($params)
          */
         $dataProvider->setSort( [
-            'attributes' => [
-                'id',
-//                'fullName' => [
-//                    'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
-//                    'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
-//                    'label' => 'Full Name',
-//                    'default' => SORT_ASC
-//                ],
-//                'country_id'
+            'defaultOrder' => [
+                'id' => SORT_DESC,
+
             ]
         ]);
 
@@ -87,7 +82,7 @@ class TaskSearch extends Task
 
     private function getStatusDone()
     {
-        return ($this->done == 1) ? TaskStatus::DONE : null;
+        return ($this->done != 1) ? TaskStatus::DONE : null;
     }
 
 }

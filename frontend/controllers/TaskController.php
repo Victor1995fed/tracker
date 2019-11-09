@@ -69,7 +69,7 @@ class TaskController extends AbstractApiController
      *
      * @return mixed
      */
-    public function actionIndex($page)
+    public function actionTest($page)
     {
 
         $offset = ($page - 1) * $this->pageSize;
@@ -86,13 +86,23 @@ class TaskController extends AbstractApiController
 //ERROR:
     }
 
-    public function actionTest($page)
+    public function actionIndex($page)
     {
+//        $countTask = Task::find()->count();
+//        $pageCount = ceil($countTask / $this->pageSize);
 //        return Yii::$app->request->queryParams;
         $searchModel = new TaskSearch();
 //        return Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        return $dataProvider;
+
+        $pagesize = $dataProvider->pagination->pageSize;// it will give Per Page data.
+        $total = $dataProvider->totalCount; //total records // 15
+        $totalPage =(int) (($total + $pagesize - 1) / $pagesize);
+
+        return ['task'=>$dataProvider->getModels(),'countPage'=>$totalPage];
+
+        return $dataProvider->getModels();
+        return $dataProvider->getCount();
 //        return $this->render('index', [
 //            'searchModel' => $searchModel,
 //            'dataProvider' => $dataProvider,
