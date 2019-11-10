@@ -15,19 +15,12 @@ class TaskSearch extends Task
     public function rules()
     {
         return [
-            [['id','status','project','period','done'], 'integer'],
-//            [['date_create', 'date_end', 'status', 'project', 'priority', 'period','done'], 'safe'],
+            [['id','status','project','period','done'], 'integer']
         ];
     }
 
     public function search($params) {
-//        return $params;
-//        return $this->period;
-//        return $this->getDate($this->period);
-//        $query = Task::find()->joinWith(['status','category','priority','project']);
         $query = Task::find()->joinWith(['status','category','priority','project'])->asArray();
-        //Поиск по id
-//        $query = Task::find()->where(['id'=>$params['id']]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -37,15 +30,18 @@ class TaskSearch extends Task
             ]
         ]);
 
-        /**
-         * Настройка параметров сортировки
-         * Важно: должна быть выполнена раньше $this->load($params)
-         */
         $dataProvider->setSort( [
             'defaultOrder' => [
                 'id' => SORT_DESC,
-
-            ]
+            ],
+            'attributes' => [
+                'title',
+                'id',
+                'status.id',
+                'project.title',
+                'priority.id',
+                'date_end'
+            ],
         ]);
 
         if (!($this->load($params,'') && $this->validate())) {
