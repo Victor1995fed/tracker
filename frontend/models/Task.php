@@ -32,7 +32,7 @@ class Task extends ActiveRecord
             [['priority_id'], 'integer', 'max' => 4],
             [['priority_id'], 'required'],
             [['project_id'], 'integer'],
-            [['date'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
+            [['date'], 'date', 'format' => 'yyyy-MM-dd'],
             [['date_start'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
             [['date_end'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
             [['status_id'], 'integer', 'max' => 10],
@@ -42,6 +42,17 @@ class Task extends ActiveRecord
             [['user_id'], 'integer']
         ];
 
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->date_end = Yii::$app->formatter->asDate(Yii::$app->request->post('date_end'), 'yyyy-MM-dd');
+            $this->date_start = Yii::$app->formatter->asDate(Yii::$app->request->post('date_start'), 'yyyy-MM-dd');
+            //TODO::Изменить формат даты при сохранении
+            return true;
+        }
+        return false;
     }
 
     /**

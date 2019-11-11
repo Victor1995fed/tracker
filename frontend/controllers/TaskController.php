@@ -96,7 +96,8 @@ class TaskController extends AbstractApiController
         }
 
         //change format date
-
+//        $task['date_end']= Yii::$app->formatter->asDate($task['date_end'], 'dd-MM-yyyy');
+//        $task['date_start']= Yii::$app->formatter->asDate($task['date_start'], 'dd-MM-yyyy');
         return [
             'task' => $task,
             'category' => $category,
