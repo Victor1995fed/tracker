@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use app\models\File;
+use frontend\constants\Settings;
 use Yii;
 use yii\base\Model;
 use yii\db\ActiveRecord;
@@ -31,15 +32,16 @@ class Task extends ActiveRecord
             [['priority_id'], 'integer', 'max' => 4],
             [['priority_id'], 'required'],
             [['project_id'], 'integer'],
-            [['date'], 'date', 'format' => 'yyyy-MM-dd'],
-            [['date_start'], 'date', 'format' => 'yyyy-MM-dd'],
-            [['date_end'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['date'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
+            [['date_start'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
+            [['date_end'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
             [['status_id'], 'integer', 'max' => 10],
             [['readiness'], 'integer'],
             [['parent_id'], 'integer'],
             [['spending'], 'double', 'max'=>100, 'min'=>0.0],
             [['user_id'], 'integer']
         ];
+
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 namespace frontend\models;
+use frontend\constants\Settings;
 use frontend\constants\TaskStatus;
 use yii\data\ActiveDataProvider;
 
@@ -52,7 +53,7 @@ class TaskSearch extends Task
         $statusDone = $this->getStatusDone();
         $query
             ->andFilterWhere(['in', 'status.id', $this->status])
-            ->andFilterWhere(['between', 'date_end', date('Y-m-d'), $date ])
+            ->andFilterWhere(['between', 'date_end', date(Settings::DATE_FORMAT_PHP), $date ])
             ->andFilterWhere(['not in', 'status.id', $statusDone ]);
 
         return $dataProvider;
@@ -62,8 +63,8 @@ class TaskSearch extends Task
     {
      if ($this->period){
          switch ($this->period) {
-             case '1':
-                 return date('Y-m-d');
+             case '30':
+                 return date('Y-m-d', strtotime('+30 days'));
                 break;
 
              case '7':

@@ -1,5 +1,6 @@
 <?php
 namespace frontend\controllers;
+use frontend\constants\Settings;
 use frontend\models\Comment;
 use frontend\models\Task;
 use Yii;
@@ -85,7 +86,7 @@ class CommentController extends AbstractApiController
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $comment= new Comment();
-            $comment->date_create = date('Y-m-d');
+            $comment->date_create = date(Settings::DATE_FORMAT_PHP);
 
             $comment->load(Yii::$app->request->post(), '');
             $comment->user_id = \Yii::$app->user->identity->id;

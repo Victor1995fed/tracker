@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 //use app\models\File;
+use frontend\constants\Settings;
 use Yii;
 use yii\base\Model;
 use yii\db\ActiveRecord;
@@ -26,7 +27,7 @@ class Note extends ActiveRecord
             [['title'], 'required'],
             [['title', 'content'], 'string'],
             [['title'], 'string', 'max' => 250],
-            [['date_create'], 'date', 'format' => 'yyyy-MM-dd']
+            [['date_create'], 'date', 'format' => Settings::DATE_FORMAT_MODEL]
 
         ];
     }

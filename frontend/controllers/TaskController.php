@@ -3,6 +3,7 @@ namespace frontend\controllers;
 use app\models\File;
 use app\models\UploadForm;
 use app\modules\helpers\UploadFileExt;
+use frontend\constants\Settings;
 use frontend\models\Category;
 use frontend\models\Priority;
 use frontend\models\Project;
@@ -94,6 +95,7 @@ class TaskController extends AbstractApiController
             $parentTask = $this->findModel($task->parent_id);
         }
 
+        //change format date
 
         return [
             'task' => $task,
@@ -115,7 +117,7 @@ class TaskController extends AbstractApiController
     {
 //        TODO: Добавить исключения
         $model = new Task();
-        $model->date = date('Y-m-d');
+        $model->date = date(Settings::DATE_FORMAT_PHP);
         $status = Yii::$app->request->post('status_id');
         if ($status === null)
             $model->status_id = 1;
@@ -194,6 +196,7 @@ class TaskController extends AbstractApiController
         $priority = Priority::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
         $status = Status::find()->select('title, id, code')->orderBy('id ASC')->asArray()->all();
 
+
         return [
             'category' => $category,
             'project' => $project,
@@ -203,9 +206,6 @@ class TaskController extends AbstractApiController
 
 
     }
-
-
-
 
 
     protected function findModel($id)
@@ -233,7 +233,7 @@ class TaskController extends AbstractApiController
                 $files->url = $file['path'];
                 $files->title = $file['name'];
                 $files->uuid = $file['uuid'];
-                $files->date_create = date('Y-m-d');
+                $files->date_create = date(Settings::DATE_FORMAT_PHP);
                 $files->save();
                 $files->id;
                 $model->link('file', $files);

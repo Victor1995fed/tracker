@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\models;
+use frontend\constants\Settings;
 use yii\db\ActiveRecord;
 /**
  * ContactForm is the model behind the contact form.
@@ -20,7 +21,7 @@ class Comment extends ActiveRecord
     {
         return [
             [['content'], 'required'],
-            [['date_create'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['date_create'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
             [['user_id'], 'required']
         ];
     }

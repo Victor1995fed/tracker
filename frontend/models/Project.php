@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use frontend\constants\Settings;
 use Yii;
 use yii\base\Model;
 use yii\db\ActiveRecord;
@@ -24,7 +25,7 @@ class Project extends ActiveRecord
         return [
             [['title'], 'required'],
             [['title'], 'string'],
-            [['date'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['date'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
             [['status_id'], 'integer'],
             ['description','string']
         ];

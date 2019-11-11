@@ -1,5 +1,6 @@
 <?php
 namespace frontend\controllers;
+use frontend\constants\Settings;
 use frontend\models\Note;
 use Yii;
 use yii\filters\VerbFilter;
@@ -92,7 +93,7 @@ class NoteController extends AbstractApiController
     public function actionCreate()
     {
         $model = new Note();
-        $model->date_create = date('Y-m-d');
+        $model->date_create = date(Settings::DATE_FORMAT_PHP);
         $model->load(Yii::$app->request->post(), '');
 
         if ($model->validate() && $model->save()){
