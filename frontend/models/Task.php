@@ -83,4 +83,9 @@ class Task extends ActiveRecord
         return $this->hasMany(File::class, ['id' => 'file_id'])
             ->viaTable('task_file', ['task_id' => 'id']);
     }
+
+    public function getComment(){
+        return $this->hasMany(Comment::class, ['id' => 'comment_id'])
+            ->viaTable('task_comment', ['task_id' => 'id']);
+    }
 }

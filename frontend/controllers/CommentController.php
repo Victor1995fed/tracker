@@ -1,17 +1,18 @@
 <?php
 namespace frontend\controllers;
-use frontend\models\Note;
+use frontend\models\Comment;
+use frontend\models\Task;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\web\HttpException;
 
 /**
  * Site controller
  */
-class NoteController extends AbstractApiController
+class CommentController extends AbstractApiController
 {
 
     public $pageSize = 10;
-
     /**
      * @inheritdoc
      */
@@ -21,7 +22,7 @@ class NoteController extends AbstractApiController
         $behaviors['verbs'] = [
             'class' => VerbFilter::class,
             'actions' => [
-                'index'  => ['get'],
+                'list'  => ['get'],
                 'view'   => ['get'],
                 'create' => ['post'],
                 'update' => ['put'],
@@ -56,31 +57,19 @@ class NoteController extends AbstractApiController
      *
      * @return mixed
      */
-    public function actionIndex($page)
+    public function actionList($id)
     {
+        $task = Task::findOne($id);
+        return $task->comment;
 
-        $offset = ($page - 1) * $this->pageSize;
-        $countTask = Note::find()->count();
-        $pageCount = ceil($countTask / $this->pageSize);
-
-//        return $countTask;
-
-//        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
-
-        $task = Note::find()->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
-
-        return ['note'=>$task,'countPage'=>$pageCount];
-//ERROR:
     }
 
 
     public function actionView($id)
     {
-        $note = $this->findModel($id);
-
-
+        $Comment = $this->findModel($id);
         return [
-            'note' => $note,
+            'Comment' => $Comment,
         ];
     }
 
@@ -89,19 +78,29 @@ class NoteController extends AbstractApiController
      *
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
-        $model = new Note();
-        $model->date_create = date('Y-m-d');
-        $model->load(Yii::$app->request->post(), '');
+        $task = Task::findOne($id);
+        $this->checkAccess($task);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $comment= new Comment();
+            $comment->date_create = date('Y-m-d');
 
-        if ($model->validate() && $model->save()){
-            return ['result' => true, 'id' => $model->id];
+            $comment->load(Yii::$app->request->post(), '');
+            $comment->user_id = \Yii::$app->user->identity->id;
+            if($comment->save()){
+                $comment->link('task',$task);
+            }
+            else
+                throw new HttpException(400, serialize($comment->errors));
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw new HttpException('500', $e->getMessage());
         }
-        else {
-//TODO: Сделать возможность передать валидацию для vue с модели YII
-            return ['result'=>false, 'message'=>$model->errors];
-        }
+
+        return $comment;
     }
 
 
@@ -131,7 +130,6 @@ class NoteController extends AbstractApiController
     public function actionDelete($id)
     {
         $model =  $this->findModel($id);
-        //TODO:: Вынести удаление файлов с сервера в отдельную функцию в модель File
         $model->delete();
         return true;
     }
@@ -140,7 +138,7 @@ class NoteController extends AbstractApiController
 
     protected function findModel($id)
     {
-        if (($model = Note::findOne($id)) !== null) {
+        if (($model = Comment::findOne($id)) !== null) {
             return $model;
         }
 
