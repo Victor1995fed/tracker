@@ -20,7 +20,8 @@ class TaskSearch extends Task
     }
 
     public function search($params) {
-        $query = Task::find()->joinWith(['status','category','priority','project'])->asArray();
+        $currentUser = \Yii::$app->user->identity->id;
+        $query = Task::find()->joinWith(['status','category','priority','project'])->where(['task.user_id'=>$currentUser])->asArray();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

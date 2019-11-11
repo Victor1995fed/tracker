@@ -44,8 +44,6 @@ class ProjectController extends AbstractApiController
 
     public function beforeAction($action)
     {
-//            $this->enableCsrfValidation = false;
-
             return parent::beforeAction($action);
     }
 
@@ -57,7 +55,7 @@ class ProjectController extends AbstractApiController
     public function actionIndex()
     {
 
-        $project = Project::find()->orderBy('id DESC')->asArray()->all();
+        $project = Project::find()->orderBy('id DESC')->where(['user_id'=>\Yii::$app->user->identity->id])->asArray()->all();
 
         return $project;
     }
@@ -66,6 +64,7 @@ class ProjectController extends AbstractApiController
     public function actionView($id)
     {
         $project = $this->findModel($id);
+        $this->checkAccess($project);
         $status = $project->status;
         return
             [
@@ -83,8 +82,9 @@ class ProjectController extends AbstractApiController
         $status = Yii::$app->request->post('status_id');
         if ($status === null)
             $model->status_id = 7;
-        $model->load(Yii::$app->request->post(),'');
 
+        $model->load(Yii::$app->request->post(),'');
+        $model->user_id = \Yii::$app->user->identity->id;
         if ($model->validate() && $model->save()) {
             return ['result'=>true, 'id'=>$model->id];
         } else {
@@ -109,6 +109,7 @@ class ProjectController extends AbstractApiController
     {
 //        return ['er','er'];
         $model = $this->findModel($id);
+        $this->checkAccess($model);
 //        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
         if ($model->load(Yii::$app->request->getBodyParams(),'') && $model->save()) {
              return ['result'=>true, 'id'=>$model->id];
@@ -134,6 +135,7 @@ class ProjectController extends AbstractApiController
     public function actionDelete($id)
     {
         $project =  $this->findModel($id);
+        $this->checkAccess($project);
 //        $dish->unlinkAll('ingredients',true);
         $project->delete();
         return true;

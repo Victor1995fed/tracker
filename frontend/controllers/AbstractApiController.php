@@ -1,5 +1,6 @@
 <?php
 namespace frontend\controllers;
+use \yii\web\HttpException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
@@ -14,7 +15,6 @@ class AbstractApiController extends Controller
     public function behaviors()
     {
         return [
-//            //TODO:: Раскомментить авторизацию
             'authenticator'=>[
                 'class'=>HttpBearerAuth::class,
                 'except' => ['options','login'],
@@ -36,6 +36,13 @@ class AbstractApiController extends Controller
         }
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
+    }
+
+    protected function checkAccess($model)
+    {
+        if ($model->user_id !== \Yii::$app->user->identity->id){
+            throw new HttpException('404', 'Нет прав для просмотра данной страницы');
+        }
     }
 
 

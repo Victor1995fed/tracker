@@ -9,6 +9,7 @@ use frontend\models\Project;
 use frontend\models\Status;
 use frontend\models\TaskSearch;
 use Yii;
+use yii\db\Exception;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use frontend\models\Task;
@@ -22,7 +23,6 @@ class TaskController extends AbstractApiController
 {
 
     public $pageSize = 10;
-
     /**
      * @inheritdoc
      */
@@ -43,6 +43,7 @@ class TaskController extends AbstractApiController
         ];
         return $behaviors;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -64,35 +65,12 @@ class TaskController extends AbstractApiController
         return parent::beforeAction($action);
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return mixed
-     */
-    public function actionTest($page)
-    {
 
-        $offset = ($page - 1) * $this->pageSize;
-        $countTask = Task::find()->count();
-        $pageCount = ceil($countTask / $this->pageSize);
-
-//        return $countTask;
-
-//        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
-
-        $task = Task::find()->with('category','priority','project','status')->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
-
-        return ['task'=>$task,'countPage'=>$pageCount];
-//ERROR:
-    }
 
     public function actionIndex($page)
     {
-//        $countTask = Task::find()->count();
-//        $pageCount = ceil($countTask / $this->pageSize);
-//        return Yii::$app->request->queryParams;
+
         $searchModel = new TaskSearch();
-//        return Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $pagesize = $dataProvider->pagination->pageSize;// it will give Per Page data.
@@ -100,18 +78,12 @@ class TaskController extends AbstractApiController
         $totalPage =(int) (($total + $pagesize - 1) / $pagesize);
 
         return ['task'=>$dataProvider->getModels(),'countPage'=>$totalPage];
-
-        return $dataProvider->getModels();
-        return $dataProvider->getCount();
-//        return $this->render('index', [
-//            'searchModel' => $searchModel,
-//            'dataProvider' => $dataProvider,
-//        ]);
     }
 
     public function actionView($id)
     {
         $task = $this->findModel($id);
+        $this->checkAccess($task);
         $category = $task->category;
         $priority = $task->priority;
         $status = $task->status;
@@ -149,7 +121,7 @@ class TaskController extends AbstractApiController
             $model->status_id = 1;
 
         $model->load(Yii::$app->request->post(), '');
-
+        $model->user_id = \Yii::$app->user->identity->id;
         if ($model->validate() && $model->save()){
             $warning = null;
             $fileSave = $this->saveFile($model);
@@ -168,6 +140,7 @@ class TaskController extends AbstractApiController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $this->checkAccess($model);
         if ($model->load(Yii::$app->request->post(),'') ) {
             //Сумма трудозатрат
             $spending = Yii::$app->request->post('spending');
@@ -201,6 +174,7 @@ class TaskController extends AbstractApiController
     public function actionDelete($id)
     {
         $model =  $this->findModel($id);
+        $this->checkAccess($model);
         $files = $model->file;
         //TODO:: Вынести удаление файлов с сервера в отдельную функцию в модель File
         //Удаление файлов с сервера

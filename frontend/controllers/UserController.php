@@ -50,4 +50,11 @@ class UserController extends AbstractApiController
 
     }
 
+    public function actionGetHash($password)
+    {
+
+       return Yii::$app->security->generatePasswordHash($password);
+
+    }
+
 }

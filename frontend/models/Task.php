@@ -24,6 +24,7 @@ class Task extends ActiveRecord
     {
         return [
             [['title'], 'required'],
+            [['user_id'], 'required'],
             [['title', 'description'], 'string'],
             [['title'], 'string', 'max' => 250],
             [['category_id'], 'integer'    ],
@@ -37,7 +38,7 @@ class Task extends ActiveRecord
             [['readiness'], 'integer'],
             [['parent_id'], 'integer'],
             [['spending'], 'double', 'max'=>100, 'min'=>0.0],
-
+            [['user_id'], 'integer']
         ];
     }
 
