@@ -6,6 +6,7 @@ use frontend\models\Task;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * Site controller
@@ -110,7 +111,6 @@ class CommentController extends AbstractApiController
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post(),'') ) {
             if($model->save()){
-
                 return ['result' => true, 'id' => $model->id];
             }
             else
@@ -131,6 +131,7 @@ class CommentController extends AbstractApiController
     public function actionDelete($id)
     {
         $model =  $this->findModel($id);
+        $model->unlinkAll('task',true);
         $model->delete();
         return true;
     }

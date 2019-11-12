@@ -21,7 +21,7 @@ class Comment extends ActiveRecord
     {
         return [
             [['content'], 'required'],
-            [['date_create'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
+            [['date_create'], 'date', 'format' => 'yyyy-MM-dd'],
             [['user_id'], 'required']
         ];
     }

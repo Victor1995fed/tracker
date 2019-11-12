@@ -150,7 +150,7 @@ class TaskController extends AbstractApiController
             if ($spending !== null){
                 $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
             }
-            if($model->save()){
+            if($model->save(false)){
                 $warning = null;
                 $fileSave = $this->saveFile($model);
                 if(!$fileSave['result']){

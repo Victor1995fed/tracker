@@ -27,7 +27,7 @@ class Note extends ActiveRecord
             [['title'], 'required'],
             [['title', 'content'], 'string'],
             [['title'], 'string', 'max' => 250],
-            [['date_create'], 'date', 'format' => Settings::DATE_FORMAT_MODEL]
+            [['date_create'], 'date', 'format' => 'yyyy-MM-dd']
 
         ];
     }

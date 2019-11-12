@@ -7,6 +7,8 @@ use frontend\constants\Settings;
 use Yii;
 use yii\base\Model;
 use yii\db\ActiveRecord;
+use yii\db\Exception;
+
 /**
  * ContactForm is the model behind the contact form.
  */
@@ -47,8 +49,10 @@ class Task extends ActiveRecord
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            $this->date_end = Yii::$app->formatter->asDate(Yii::$app->request->post('date_end'), 'yyyy-MM-dd');
-            $this->date_start = Yii::$app->formatter->asDate(Yii::$app->request->post('date_start'), 'yyyy-MM-dd');
+            if($dateStart = Yii::$app->request->getBodyParam('date_start'))
+                $this->date_start = Yii::$app->formatter->asDate($dateStart, 'yyyy-MM-dd');
+            if($dateEnd = Yii::$app->request->getBodyParam('date_end'))
+                $this->date_end = Yii::$app->formatter->asDate($dateEnd, 'yyyy-MM-dd');
             //TODO::Изменить формат даты при сохранении
             return true;
         }
@@ -98,7 +102,8 @@ class Task extends ActiveRecord
     }
 
     public function getComment(){
-        return $this->hasMany(Comment::class, ['id' => 'comment_id'])
+//        TODO:: Переделать сортировку по date_create
+        return $this->hasMany(Comment::class, ['id' => 'comment_id'])->orderBy(['id' => SORT_DESC])
             ->viaTable('task_comment', ['task_id' => 'id']);
     }
 }
