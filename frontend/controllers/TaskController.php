@@ -5,17 +5,15 @@ use app\models\UploadForm;
 use app\modules\helpers\UploadFileExt;
 use frontend\constants\Settings;
 use frontend\models\Category;
+use frontend\models\History;
 use frontend\models\Priority;
 use frontend\models\Project;
 use frontend\models\Status;
 use frontend\models\TaskSearch;
 use Yii;
-use yii\db\Exception;
 use yii\filters\VerbFilter;
-use yii\web\Controller;
 use frontend\models\Task;
-use yii\data\ActiveDataProvider;
-use yii\web\UploadedFile;
+use yii\web\HttpException;
 
 /**
  * Site controller
@@ -39,7 +37,8 @@ class TaskController extends AbstractApiController
                 'update' => ['put'],
                 'delete' => ['delete'],
                 'edit' => ['get'],
-                'test' => ['get']
+                'test' => ['get'],
+                'get-history' =>['get']
             ],
         ];
         return $behaviors;
@@ -95,9 +94,6 @@ class TaskController extends AbstractApiController
             $parentTask = $this->findModel($task->parent_id);
         }
 
-        //change format date
-//        $task['date_end']= Yii::$app->formatter->asDate($task['date_end'], 'dd-MM-yyyy');
-//        $task['date_start']= Yii::$app->formatter->asDate($task['date_start'], 'dd-MM-yyyy');
         return [
             'task' => $task,
             'category' => $category,
@@ -144,23 +140,38 @@ class TaskController extends AbstractApiController
     {
         $model = $this->findModel($id);
         $this->checkAccess($model);
+        $modelOldAttributes = $model->getAttributes();
         if ($model->load(Yii::$app->request->post(),'') ) {
+            $modelDirtyAttributes = $model->getDirtyAttributes();
             //Сумма трудозатрат
             $spending = Yii::$app->request->post('spending');
             if ($spending !== null){
                 $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
             }
-            if($model->save(false)){
+            if($model->validate() && $model->save(false)){
                 $warning = null;
                 $fileSave = $this->saveFile($model);
                 if(!$fileSave['result']){
                     $warning = $fileSave['errors'];
                 }
+
+                $fieldsChanged = History::getChangesFields($modelDirtyAttributes, $modelOldAttributes);
+                if(!empty($fieldsChanged)){
+                    //Запись в историю
+                    $history = new History();
+                    $history->user_id = \Yii::$app->user->identity->id;
+                    $history->comment = $model->changedFieldsToString($fieldsChanged);
+                    $history->save();
+                    $history->link('task',$model);
+                }
+
+
+//                #######################################
                 //TODO:: Добавить тесты для этого контроллера
                 return ['result' => true, 'id' => $model->id,'warning'=>$warning];
             }
             else
-                return $model->errors;
+                throw new HttpException(500, serialize($model->errors));
         }
 
         return $model;
@@ -192,8 +203,9 @@ class TaskController extends AbstractApiController
 
     public function actionEdit()
     {
-        $category = Category::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
-        $project = Project::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
+        $userId = \Yii::$app->user->identity->id;
+        $category = Category::find()->select('title, id')->where(['user_id'=>$userId])->orderBy('id DESC')->asArray()->all();
+        $project = Project::find()->select('title, id')->where(['user_id'=>$userId])->orderBy('id DESC')->asArray()->all();
         $priority = Priority::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
         $status = Status::find()->select('title, id, code')->orderBy('id ASC')->asArray()->all();
 
@@ -206,6 +218,12 @@ class TaskController extends AbstractApiController
         ];
 
 
+    }
+
+    public function actionGetHistory($id)
+    {
+        $model = $this->findModel($id);
+        return $model->history;
     }
 
 

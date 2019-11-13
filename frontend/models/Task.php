@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use app\models\File;
+use frontend\constants\HistoryAction;
 use frontend\constants\Settings;
 use Yii;
 use yii\base\Model;
@@ -46,19 +47,6 @@ class Task extends ActiveRecord
 
     }
 
-    public function beforeSave($insert)
-    {
-        if (parent::beforeSave($insert)) {
-            if($dateStart = Yii::$app->request->getBodyParam('date_start'))
-                $this->date_start = Yii::$app->formatter->asDate($dateStart, 'yyyy-MM-dd');
-            if($dateEnd = Yii::$app->request->getBodyParam('date_end'))
-                $this->date_end = Yii::$app->formatter->asDate($dateEnd, 'yyyy-MM-dd');
-            //TODO::Изменить формат даты при сохранении
-            return true;
-        }
-        return false;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -66,7 +54,7 @@ class Task extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Тема',
+            'title' => 'Название',
             'description' => 'Описание',
             'category_id' => 'Категория',
             'priority_id' => 'Приоритет',
@@ -75,7 +63,9 @@ class Task extends ActiveRecord
             'date_end' => 'Дата завершения',
             'project_id' => 'Проект',
             'parent_id' => 'Id родительской записи',
-            'spending' => 'Трудозатраты'
+            'spending' => 'Трудозатраты',
+            'readiness' => 'Прогресс',
+            'status_id' => 'Статус'
         ];
 
 
@@ -105,5 +95,52 @@ class Task extends ActiveRecord
 //        TODO:: Переделать сортировку по date_create
         return $this->hasMany(Comment::class, ['id' => 'comment_id'])->orderBy(['id' => SORT_DESC])
             ->viaTable('task_comment', ['task_id' => 'id']);
+    }
+
+    public function getHistory(){
+        return $this->hasMany(History::class, ['id' => 'history_id'])
+            ->viaTable('task_history', ['task_id' => 'id']);
+    }
+
+    public function changedFieldsToString($fieldsChanged)
+    {
+        $comment = '';
+        $priority = $this->setKeyId(Priority::find()->asArray()->all());
+        $status = $this->setKeyId(Status::find()->asArray()->all());
+        $attributeLabel = $this->attributeLabels();
+        foreach ($fieldsChanged as $key => $value){
+            //TODO:: Добавить проверки
+            //TODO:: Добавить отдельную проверку для трудозатрат
+            switch ($value['attribute']){
+                case 'priority_id':
+                    $valueOld = $priority[$value['old']];
+                    $valueNew = $priority[$value['new']];
+                    break;
+                case 'status_id':
+                    $valueOld = $status[$value['old']];
+                    $valueNew = $status[$value['new']];
+                    break;
+
+                case 'project_id':
+                    $valueOld =  Project::findOne($value['old'])['title'];
+                    $valueNew =  Project::findOne($value['new'])['title'];
+                    break;
+                default:
+                    $valueOld = $value['old'];
+                    $valueNew = $value['new'];
+                    break;
+            }
+            $comment .= '<b>'.HistoryAction::CHANGE_FIELD.'</b> <u>'.(isset($attributeLabel[$value['attribute']]) ? $attributeLabel[$value['attribute']] : $value['attribute']).'</u> с <code>'.$valueOld.'</code> на <code>'.$valueNew.'</code><br />.';
+        }
+        return $comment;
+    }
+
+    protected function setKeyId($list)
+    {
+        $result = [];
+        foreach ($list as $k=>$v){
+            $result[$v['id']] = $v['title'];
+        }
+        return $result;
     }
 }
