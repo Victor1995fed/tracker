@@ -39,8 +39,6 @@ class UserController extends AbstractApiController
     public function actionLogin()
     {
         $model = new LoginForm();
-//        Yii::$app->request->getBodyParams()
-//        return Yii::$app->request->getBodyParams();
         if ($model->load(Yii::$app->request->post(), '') && $model->login()) {
             return ['user'=>$model->username,'token'=>$model->token];
         } else {
@@ -52,9 +50,7 @@ class UserController extends AbstractApiController
 
     public function actionGetHash($password)
     {
-
        return Yii::$app->security->generatePasswordHash($password);
-
     }
 
 }

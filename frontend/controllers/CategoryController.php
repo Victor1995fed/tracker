@@ -3,6 +3,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\filters\VerbFilter;
 use frontend\models\Category;
+use yii\web\HttpException;
 
 class CategoryController extends AbstractApiController
 {
@@ -82,9 +83,9 @@ class CategoryController extends AbstractApiController
         if ($model->validate() && $model->save()) {
             return ['result'=>true, 'id'=>$model->id];
         }
-        else{
-            return ['result'=>false, 'message'=>$model->errors];
-        }
+        else
+            throw new HttpException(500, serialize($model->errors));
+
 
     }
 
@@ -99,15 +100,13 @@ class CategoryController extends AbstractApiController
     public function actionUpdate($id)
     {
 
-//        return ['er','er'];
         $model = $this->findModel($id);
-//        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
         if ($model->load(Yii::$app->request->getBodyParams(),'') && $model->save()) {
             return ['result'=>true, 'id'=>$model->id];
         }
         else
-            return $model->errors;
-//        return $model;
+            throw new HttpException(500, serialize($model->errors));
+
     }
 
 
@@ -132,7 +131,6 @@ class CategoryController extends AbstractApiController
         if (($model = Category::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 

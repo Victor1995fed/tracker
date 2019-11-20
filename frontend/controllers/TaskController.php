@@ -21,7 +21,6 @@ use yii\web\HttpException;
 class TaskController extends AbstractApiController
 {
 
-    public $pageSize = 10;
     /**
      * @inheritdoc
      */
@@ -131,7 +130,7 @@ class TaskController extends AbstractApiController
         }
         else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
-            return ['result'=>false, 'message'=>$model->errors];
+            throw new HttpException(500, serialize($model->errors));
             }
     }
 
@@ -239,10 +238,7 @@ class TaskController extends AbstractApiController
     private function saveFile($model){
         //    TODO:: Добавить проверку уникальности загружаемых файлов, через md5_file
         $uploadForm = new UploadForm();
-
-//        $uploadForm->file  = UploadedFile::getInstancesByName( 'file');
         $uploadForm->file  = UploadFileExt::getInstancesByName( 'file');
-//        throw new \Exception(serialize($uploadForm->file));
         if(empty($uploadForm->file))
             return ['result'=>true];
         if ($dataFiles = $uploadForm->upload()) {
@@ -261,7 +257,7 @@ class TaskController extends AbstractApiController
             return ['result'=>true];
         }
         else
-            return ['result'=>false,'errors'=>$uploadForm->errors];
+            throw new HttpException(500, serialize($uploadForm->errors));
     }
 
 

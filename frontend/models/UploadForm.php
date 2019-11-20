@@ -53,13 +53,10 @@ public function uploadDir(){
                     $uuid = Uuid::uuid();
                     $path = $this->uploadDir() . $folder . $uuid . '_' . $file->baseName . '.' . $file->extension;
                     if(Yii::$app->request->isPost){
-                        //FIXME:: Нет поддержки сохранения через PUT
                         $file->saveAs($path);
                     }
                     elseif(Yii::$app->request->isPut){
                         $file->saveFilePut($path);
-//                        print_r($file->baseName);
-
                     }
                     $dataFiles[] = ['path'=>$path,'name'=>$file->baseName . '.' . $file->extension,'uuid'=>$uuid];
                 }

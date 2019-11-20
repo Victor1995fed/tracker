@@ -95,11 +95,11 @@ class CommentController extends AbstractApiController
                 $comment->link('task',$task);
             }
             else
-                throw new HttpException(400, serialize($comment->errors));
+                throw new HttpException(500, serialize($comment->errors));
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();
-            throw new HttpException('500', $e->getMessage());
+            throw new HttpException(500, $e->getMessage());
         }
 
         return $comment;
@@ -114,7 +114,7 @@ class CommentController extends AbstractApiController
                 return ['result' => true, 'id' => $model->id];
             }
             else
-                return $model->errors;
+                throw new HttpException(500, serialize($model->errors));
         }
 
         return $model;

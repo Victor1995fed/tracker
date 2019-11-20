@@ -45,21 +45,13 @@ class FileController  extends AbstractApiController
         //get id
         $dataId = File::find()->select('id')->where(['uuid'=>$uuid])->one();
         $id = $dataId['id'];
-
         //TODO:: Добавить поле user, для идентификации скачивающего файл
         $model =  $this->findModel($id);
         if($model['url'] != '')
             @unlink($model['url']);
-
         $model->unlinkAll('task',true);
         $model->delete();
-//        if($model->unlinkAll('task',true) && $model->delete())
             return true;
-//        $model->unlinkAll('task',true);
-//        $model->delete();
-//        $result = $files::find()->with('task')
-//            ->where(['uuid'=>$uuid])->asArray()->one();
-//        return $result;
     }
 
     protected function findModel($id)

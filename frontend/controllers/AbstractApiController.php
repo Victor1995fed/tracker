@@ -41,7 +41,7 @@ class AbstractApiController extends Controller
     protected function checkAccess($model)
     {
         if ($model->user_id !== \Yii::$app->user->identity->id){
-            throw new HttpException('404', 'Нет прав для просмотра данной страницы');
+            throw new HttpException(403, 'Нет прав для просмотра данной страницы');
         }
     }
 

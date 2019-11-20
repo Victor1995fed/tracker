@@ -4,6 +4,7 @@ use frontend\constants\Settings;
 use frontend\models\Note;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\web\HttpException;
 
 /**
  * Site controller
@@ -64,22 +65,14 @@ class NoteController extends AbstractApiController
         $countTask = Note::find()->count();
         $pageCount = ceil($countTask / $this->pageSize);
 
-//        return $countTask;
-
-//        $task = Task::find()->with('category','priority')->orderBy('id DESC')->limit(15)->offset(1)->asArray()->all();
-
         $task = Note::find()->offset($offset)->limit($this->pageSize)->orderBy('id DESC')->asArray()->all();
-
         return ['note'=>$task,'countPage'=>$pageCount];
-//ERROR:
     }
 
 
     public function actionView($id)
     {
         $note = $this->findModel($id);
-
-
         return [
             'note' => $note,
         ];
@@ -101,7 +94,7 @@ class NoteController extends AbstractApiController
         }
         else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
-            return ['result'=>false, 'message'=>$model->errors];
+            throw new HttpException(500, serialize($model->errors));
         }
     }
 
@@ -115,7 +108,7 @@ class NoteController extends AbstractApiController
                 return ['result' => true, 'id' => $model->id];
             }
             else
-                return $model->errors;
+                throw new HttpException(500, serialize($model->errors));
         }
 
         return $model;
@@ -144,7 +137,6 @@ class NoteController extends AbstractApiController
         if (($model = Note::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 

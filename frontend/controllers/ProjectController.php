@@ -7,6 +7,8 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 use frontend\models\Project;
 use app\modules\helper\Helper;
+use yii\web\HttpException;
+
 class ProjectController extends AbstractApiController
 {
     /**
@@ -91,7 +93,7 @@ class ProjectController extends AbstractApiController
         } else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
 
-           return ['result'=>false, 'message'=>$model->errors];
+            throw new HttpException(500, serialize($model->errors));
         }
 
 
@@ -108,10 +110,8 @@ class ProjectController extends AbstractApiController
      */
     public function actionUpdate($id)
     {
-//        return ['er','er'];
         $model = $this->findModel($id);
         $this->checkAccess($model);
-//        $data = Ingredients::find()->select(['title', 'id'])->where('active = 1')->indexBy('id')->column();
         if ($model->load(Yii::$app->request->getBodyParams(),'') && $model->save()) {
              return ['result'=>true, 'id'=>$model->id];
         }
@@ -123,7 +123,6 @@ class ProjectController extends AbstractApiController
     {
      $status = Status::find()->where(['id' => [7,8]])->all();
      return $status;
-
     }
 
     /**
