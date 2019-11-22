@@ -90,7 +90,7 @@ class NoteController extends AbstractApiController
         $model->load(Yii::$app->request->post(), '');
 
         if ($model->validate() && $model->save()){
-            return ['result' => true, 'id' => $model->id];
+            return  $model->id;
         }
         else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
@@ -104,8 +104,7 @@ class NoteController extends AbstractApiController
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post(),'') ) {
             if($model->save()){
-
-                return ['result' => true, 'id' => $model->id];
+                return $model->id;
             }
             else
                 throw new HttpException(500, serialize($model->errors));

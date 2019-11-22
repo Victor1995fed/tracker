@@ -57,7 +57,6 @@ class ProjectController extends AbstractApiController
      */
     public function actionIndex()
     {
-
         $project = Project::find()->orderBy('id DESC')->where(['user_id'=>\Yii::$app->user->identity->id])->asArray()->all();
 
         return $project;
@@ -78,9 +77,7 @@ class ProjectController extends AbstractApiController
 
     public function actionCreate()
     {
-
         $model = new Project(); //создаём объект
-
         $model->date = date(Settings::DATE_FORMAT_PHP);
         $status = Yii::$app->request->post('status_id');
         if ($status === null)
@@ -95,8 +92,6 @@ class ProjectController extends AbstractApiController
 
             throw new HttpException(500, serialize($model->errors));
         }
-
-
 
     }
 

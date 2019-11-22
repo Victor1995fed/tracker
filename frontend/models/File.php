@@ -56,4 +56,19 @@ class File extends \yii\db\ActiveRecord
             ->viaTable('task_file', ['file_id' => 'id']);
     }
 
+    //TODO:: Допилить функционал с file_hash
+//    /**
+//     * Возвращает существующий или создает новый экземпляр класса с переносом данных в хранилище
+//     * @param DiskFile $diskFile - дисковый файл
+//     * @return File|array|bool|\yii\db\ActiveRecord|null
+//     * @throws \Exception
+//     */
+//    public static function getOrCreateByFile($diskFile)
+//    {
+//        if ($file = File::find()->where(['file_hash' => $diskFile->getHash()])->one())
+//            return $file;
+//        else
+//            return File::populateFromDiskFile($diskFile);
+//    }
+
 }

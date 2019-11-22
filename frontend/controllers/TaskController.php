@@ -111,27 +111,31 @@ class TaskController extends AbstractApiController
      */
     public function actionCreate()
     {
+        $transaction = Yii::$app->db->beginTransaction();
 //        TODO: Добавить исключения
-        $model = new Task();
-        $model->date = date(Settings::DATE_FORMAT_PHP);
-        $status = Yii::$app->request->post('status_id');
-        if ($status === null)
-            $model->status_id = 1;
-
-        $model->load(Yii::$app->request->post(), '');
-        $model->user_id = \Yii::$app->user->identity->id;
-        if ($model->validate() && $model->save()){
-            $warning = null;
-            $fileSave = $this->saveFile($model);
-            if(!$fileSave['result']){
-                $warning = $fileSave['errors'];
-            }
-           return ['result' => true, 'id' => $model->id,'warning'=>$warning];
-        }
-        else {
+        try {
+            $model = new Task();
+            $model->date = date(Settings::DATE_FORMAT_PHP);
+            $status = Yii::$app->request->post('status_id');
+            if ($status === null)
+                $model->status_id = 1;
+            $model->load(Yii::$app->request->post(), '');
+            $model->user_id = \Yii::$app->user->identity->id;
+            if ($model->validate() && $model->save()) {
+                $warning = null;
+                $fileSave = $this->saveFile($model);
+                $transaction->commit();
+                return ['result' => true, 'id' => $model->id];
+            } else {
+                $transaction->rollBack();
 //TODO: Сделать возможность передать валидацию для vue с модели YII
-            throw new HttpException(500, serialize($model->errors));
+                throw new HttpException(500, serialize($model->errors));
             }
+        }
+        catch (Exception $e) {
+            $transaction->rollBack();
+            throw new HttpException(500, $e->getMessage());
+        }
     }
 
 
@@ -141,12 +145,13 @@ class TaskController extends AbstractApiController
         $this->checkAccess($model);
         $modelOldAttributes = $model->getAttributes();
         if ($model->load(Yii::$app->request->post(),'') ) {
-            $modelDirtyAttributes = $model->getDirtyAttributes();
             //Сумма трудозатрат
             $spending = Yii::$app->request->post('spending');
             if ($spending !== null){
-                $model->spending =  round((int) $this->findModel($id)->spending + $spending, 1);
+                $model->spending =  round((float) $this->findModel($id)->spending + $spending, 1);
             }
+            $modelDirtyAttributes = $model->getDirtyAttributes();
+
             if($model->validate() && $model->save(false)){
                 $warning = null;
                 $fileSave = $this->saveFile($model);
@@ -163,8 +168,6 @@ class TaskController extends AbstractApiController
                     $history->save();
                     $history->link('task',$model);
                 }
-
-
 //                #######################################
                 //TODO:: Добавить тесты для этого контроллера
                 return ['result' => true, 'id' => $model->id,'warning'=>$warning];
@@ -240,21 +243,26 @@ class TaskController extends AbstractApiController
         $uploadForm = new UploadForm();
         $uploadForm->file  = UploadFileExt::getInstancesByName( 'file');
         if(empty($uploadForm->file))
-            return ['result'=>true];
+            return true;
         if ($dataFiles = $uploadForm->upload()) {
+            try{
+                foreach ($dataFiles as $file){
+                    $files  = new File();
+                    $files->url = $file['path'];
+                    $files->title = $file['name'];
+                    $files->uuid = $file['uuid'];
+                    $files->date_create = date(Settings::DATE_FORMAT_PHP);
+                    $files->save();
+                    $files->id;
+                    $model->link('file', $files);
 
-            foreach ($dataFiles as $file){
-                $files  = new File();
-                $files->url = $file['path'];
-                $files->title = $file['name'];
-                $files->uuid = $file['uuid'];
-                $files->date_create = date(Settings::DATE_FORMAT_PHP);
-                $files->save();
-                $files->id;
-                $model->link('file', $files);
-                //TODO:: Добавить обработку ошибок!!!
+                }
+                return true;
             }
-            return ['result'=>true];
+            catch (Exception $e) {
+                throw new HttpException(500, $e->getMessage());
+            }
+
         }
         else
             throw new HttpException(500, serialize($uploadForm->errors));

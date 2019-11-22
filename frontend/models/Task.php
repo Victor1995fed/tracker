@@ -98,7 +98,7 @@ class Task extends ActiveRecord
     }
 
     public function getHistory(){
-        return $this->hasMany(History::class, ['id' => 'history_id'])
+        return $this->hasMany(History::class, ['id' => 'history_id'])->orderBy(['history.date'=>SORT_DESC])
             ->viaTable('task_history', ['task_id' => 'id']);
     }
 
@@ -130,7 +130,7 @@ class Task extends ActiveRecord
                     $valueNew = $value['new'];
                     break;
             }
-            $comment .= '<b>'.HistoryAction::CHANGE_FIELD.'</b> <u>'.(isset($attributeLabel[$value['attribute']]) ? $attributeLabel[$value['attribute']] : $value['attribute']).'</u> с <code>'.$valueOld.'</code> на <code>'.$valueNew.'</code><br />.';
+            $comment .= '<b>'.HistoryAction::CHANGE_FIELD.'</b> <u>'.(isset($attributeLabel[$value['attribute']]) ? $attributeLabel[$value['attribute']] : $value['attribute']).'</u>  <code>'.$valueOld.'</code> &rArr; <code>'.$valueNew.'</code><br />.';
         }
         return $comment;
     }
