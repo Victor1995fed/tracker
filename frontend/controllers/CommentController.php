@@ -96,6 +96,7 @@ class CommentController extends AbstractApiController
             }
             else
                 throw new HttpException(500, serialize($comment->errors));
+
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();
@@ -111,7 +112,7 @@ class CommentController extends AbstractApiController
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post(),'') ) {
             if($model->save()){
-                return ['result' => true, 'id' => $model->id];
+                return  $model->id;
             }
             else
                 throw new HttpException(500, serialize($model->errors));

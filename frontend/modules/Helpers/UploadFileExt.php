@@ -1,20 +1,25 @@
 <?php
 
 namespace app\modules\helpers;
+use yii\db\Exception;
 use yii\web\UploadedFile;
 
 
 class UploadFileExt extends UploadedFile
 {
 
-    public function saveFilePut( $path)
+    public function saveFilePut($path)
     {
-        $input = file_get_contents('php://input');
-        $fullName = $this->baseName . '.' . $this->extension; //get name file
-        $pattern = '/'.$fullName.'".*?Content-Type.*?\n(.*?)------/ms';
-        $resultMath = preg_match_all($pattern,$input,$found); //search file in php://input
-        if($resultMath == 0)
-            return false;
-        return file_put_contents($path, trim($found[1][0]));
+        if($content = file_get_contents($this->tempName))
+            return file_put_contents($path, $content);
+        else
+            throw new Exception('Не удалось найти файл для сохранения');
     }
+
+    public function getHash()
+    {
+        return md5_file($this->tempName);
+    }
+
+
 }

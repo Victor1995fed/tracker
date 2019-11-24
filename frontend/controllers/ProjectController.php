@@ -67,11 +67,10 @@ class ProjectController extends AbstractApiController
     {
         $project = $this->findModel($id);
         $this->checkAccess($project);
-        $status = $project->status;
         return
             [
                 'project' => $project,
-                'status' => $status,
+                'status' => $project->status,
             ];
     }
 
@@ -86,7 +85,7 @@ class ProjectController extends AbstractApiController
         $model->load(Yii::$app->request->post(),'');
         $model->user_id = \Yii::$app->user->identity->id;
         if ($model->validate() && $model->save()) {
-            return ['result'=>true, 'id'=>$model->id];
+            return $model->id;
         } else {
 //TODO: Сделать возможность передать валидацию для vue с модели YII
 
@@ -108,7 +107,7 @@ class ProjectController extends AbstractApiController
         $model = $this->findModel($id);
         $this->checkAccess($model);
         if ($model->load(Yii::$app->request->getBodyParams(),'') && $model->save()) {
-             return ['result'=>true, 'id'=>$model->id];
+             return $model->id;
         }
 
         return $model;

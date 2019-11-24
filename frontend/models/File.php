@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\helpers\UploadFileExt;
 use frontend\constants\Settings;
 use frontend\models\Task;
 use Yii;
@@ -33,7 +34,8 @@ class File extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['title', 'url'], 'string', 'max' => 255],
             [['uuid'],'string','max'=>36],
-            [['date_create'], 'date', 'format' => Settings::DATE_FORMAT_MODEL]
+            [['date_create'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],
+            [['file_hash'],'string']
         ];
     }
 
@@ -48,6 +50,7 @@ class File extends \yii\db\ActiveRecord
             'url' => 'Url',
             'description' => 'Description',
             'uuid' => 'UUID',
+            'file_hash' => 'hash'
         ];
     }
 
@@ -57,18 +60,18 @@ class File extends \yii\db\ActiveRecord
     }
 
     //TODO:: Допилить функционал с file_hash
-//    /**
-//     * Возвращает существующий или создает новый экземпляр класса с переносом данных в хранилище
-//     * @param DiskFile $diskFile - дисковый файл
-//     * @return File|array|bool|\yii\db\ActiveRecord|null
-//     * @throws \Exception
-//     */
-//    public static function getOrCreateByFile($diskFile)
-//    {
-//        if ($file = File::find()->where(['file_hash' => $diskFile->getHash()])->one())
-//            return $file;
-//        else
-//            return File::populateFromDiskFile($diskFile);
-//    }
+    /**
+     * Возвращает экземпяр класса File если файл существует
+     * @param  $diskFile - загружаемый файл
+     * @return File|array|bool|\yii\db\ActiveRecord|null
+     * @throws \Exception
+     */
+    public static function getFile(UploadFileExt $diskFile)
+    {
+        if ($file = File::find()->where(['file_hash' => $diskFile->getHash()])->one())
+            return $file;
+        else
+            return false;
+    }
 
 }

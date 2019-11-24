@@ -42,6 +42,7 @@ class FileController  extends AbstractApiController
 
     public function actionDelete($uuid)
     {
+        //TODO:: Доработать возможность удаления файла с сервера, если он нигде не используется
         //get id
         $dataId = File::find()->select('id')->where(['uuid'=>$uuid])->one();
         $id = $dataId['id'];
@@ -51,7 +52,7 @@ class FileController  extends AbstractApiController
             @unlink($model['url']);
         $model->unlinkAll('task',true);
         $model->delete();
-            return true;
+        return true;
     }
 
     protected function findModel($id)

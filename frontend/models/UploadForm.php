@@ -1,15 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: DNS
- * Date: 14.09.2019
- * Time: 14:33
- */
-
 namespace app\models;
 
 use Faker\Provider\Uuid;
-//use Ramsey\Uuid\Uuid;
 
 use Yii;
 use yii\base\Model;
@@ -52,13 +44,19 @@ public function uploadDir(){
                 foreach ($this->file as $file){
                     $uuid = Uuid::uuid();
                     $path = $this->uploadDir() . $folder . $uuid . '_' . $file->baseName . '.' . $file->extension;
+                    $hash = $file->getHash();
+                    //Проверка на уникальность файла
+                    if($findOne = File::getFile($file)){
+                        $dataFiles[] = ['findOne'=>$findOne];
+                        continue;
+                    }
                     if(Yii::$app->request->isPost){
                         $file->saveAs($path);
                     }
                     elseif(Yii::$app->request->isPut){
                         $file->saveFilePut($path);
                     }
-                    $dataFiles[] = ['path'=>$path,'name'=>$file->baseName . '.' . $file->extension,'uuid'=>$uuid];
+                    $dataFiles[] = ['path'=>$path,'name'=>$file->baseName . '.' . $file->extension,'uuid'=>$uuid,'file_hash'=>$hash];
                 }
             }
 

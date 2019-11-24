@@ -35,6 +35,7 @@ class TaskController extends AbstractApiController
                 'create' => ['post'],
                 'update' => ['put'],
                 'delete' => ['delete'],
+                'file-delete' => ['delete'],
                 'edit' => ['get'],
                 'test' => ['get'],
                 'get-history' =>['get']
@@ -83,11 +84,6 @@ class TaskController extends AbstractApiController
     {
         $task = $this->findModel($id);
         $this->checkAccess($task);
-        $category = $task->category;
-        $priority = $task->priority;
-        $status = $task->status;
-        $files = $task->file;
-        $project = $task->project;
         //Получаем родительскую задачу, если есть
         if($task->parent_id !== null){
             $parentTask = $this->findModel($task->parent_id);
@@ -95,11 +91,11 @@ class TaskController extends AbstractApiController
 
         return [
             'task' => $task,
-            'category' => $category,
-            'priority' => $priority,
-            'files' => $files,
-            'status'=>$status,
-            'project'=>$project,
+            'category' => $task->category,
+            'priority' => $task->priority,
+            'files' => $task->file,
+            'status'=>$task->status,
+            'project'=>$task->project,
             'parent_task'=>$parentTask ?? null
         ];
     }
@@ -112,7 +108,6 @@ class TaskController extends AbstractApiController
     public function actionCreate()
     {
         $transaction = Yii::$app->db->beginTransaction();
-//        TODO: Добавить исключения
         try {
             $model = new Task();
             $model->date = date(Settings::DATE_FORMAT_PHP);
@@ -125,9 +120,8 @@ class TaskController extends AbstractApiController
                 $warning = null;
                 $fileSave = $this->saveFile($model);
                 $transaction->commit();
-                return ['result' => true, 'id' => $model->id];
+                return  $model->id;
             } else {
-                $transaction->rollBack();
 //TODO: Сделать возможность передать валидацию для vue с модели YII
                 throw new HttpException(500, serialize($model->errors));
             }
@@ -153,12 +147,7 @@ class TaskController extends AbstractApiController
             $modelDirtyAttributes = $model->getDirtyAttributes();
 
             if($model->validate() && $model->save(false)){
-                $warning = null;
                 $fileSave = $this->saveFile($model);
-                if(!$fileSave['result']){
-                    $warning = $fileSave['errors'];
-                }
-
                 $fieldsChanged = History::getChangesFields($modelDirtyAttributes, $modelOldAttributes);
                 if(!empty($fieldsChanged)){
                     //Запись в историю
@@ -170,7 +159,7 @@ class TaskController extends AbstractApiController
                 }
 //                #######################################
                 //TODO:: Добавить тесты для этого контроллера
-                return ['result' => true, 'id' => $model->id,'warning'=>$warning];
+                return  $model->id;
             }
             else
                 throw new HttpException(500, serialize($model->errors));
@@ -228,6 +217,19 @@ class TaskController extends AbstractApiController
         return $model->history;
     }
 
+    public function actionFileDelete($id,$uuid)
+    {
+        $model =  $this->findModel($id);
+        $this->checkAccess($model);
+        $model->unlink('file',
+            File::find()
+                ->where(['uuid' => $uuid])
+                ->one()
+        );
+        return true;
+
+    }
+
 
     protected function findModel($id)
     {
@@ -247,13 +249,19 @@ class TaskController extends AbstractApiController
         if ($dataFiles = $uploadForm->upload()) {
             try{
                 foreach ($dataFiles as $file){
-                    $files  = new File();
-                    $files->url = $file['path'];
-                    $files->title = $file['name'];
-                    $files->uuid = $file['uuid'];
-                    $files->date_create = date(Settings::DATE_FORMAT_PHP);
-                    $files->save();
-                    $files->id;
+                    if(isset($file['findOne'])){
+                       $files =  $file['findOne'];
+                    }
+                    else{
+                        $files  = new File();
+                        $files->url = $file['path'];
+                        $files->title = $file['name'];
+                        $files->uuid = $file['uuid'];
+                        $files->date_create = date(Settings::DATE_FORMAT_PHP);
+                        $files->file_hash = $file['file_hash'];
+                        $files->save();
+                        $files->id;
+                    }
                     $model->link('file', $files);
 
                 }
