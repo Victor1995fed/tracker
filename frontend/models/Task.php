@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use app\models\File;
+use app\models\Tag;
 use frontend\constants\HistoryAction;
 use frontend\constants\Settings;
 use Yii;
@@ -100,6 +101,13 @@ class Task extends ActiveRecord
     public function getHistory(){
         return $this->hasMany(History::class, ['id' => 'history_id'])->orderBy(['history.date'=>SORT_DESC])
             ->viaTable('task_history', ['task_id' => 'id']);
+    }
+
+
+    public function getTag(){
+//        TODO:: Переделать сортировку по date_create
+        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->orderBy(['id' => SORT_DESC])
+            ->viaTable('task_tag', ['task_id' => 'id']);
     }
 
     public function changedFieldsToString($fieldsChanged)
