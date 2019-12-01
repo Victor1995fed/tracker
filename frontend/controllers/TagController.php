@@ -60,7 +60,8 @@ class TagController extends AbstractApiController
      */
     public function actionList()
     {
-        return 'test';
+        $model = Tag::find()->orderBy('id DESC')->where(['user_id'=>\Yii::$app->user->identity->id])->asArray()->all();
+        return $model;
     }
 
 
