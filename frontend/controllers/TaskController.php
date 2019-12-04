@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 use app\models\File;
+use app\models\Tag;
 use app\models\UploadForm;
 use app\modules\helpers\UploadFileExt;
 use frontend\constants\Settings;
@@ -88,15 +89,15 @@ class TaskController extends AbstractApiController
         if($task->parent_id !== null){
             $parentTask = $this->findModel($task->parent_id);
         }
-
         return [
             'task' => $task,
             'category' => $task->category,
             'priority' => $task->priority,
             'files' => $task->file,
-            'status'=>$task->status,
-            'project'=>$task->project,
-            'parent_task'=>$parentTask ?? null
+            'status'=> $task->status,
+            'project'=> $task->project,
+            'parent_task' => $parentTask ?? null,
+            'tag' => $task->tag,
         ];
     }
 
@@ -107,6 +108,7 @@ class TaskController extends AbstractApiController
      */
     public function actionCreate()
     {
+        //TODO: Перенести функции сохранения файлов в модель
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $model = new Task();
@@ -199,13 +201,14 @@ class TaskController extends AbstractApiController
         $project = Project::find()->select('title, id')->where(['user_id'=>$userId])->orderBy('id DESC')->asArray()->all();
         $priority = Priority::find()->select('title, id')->orderBy('id DESC')->asArray()->all();
         $status = Status::find()->select('title, id, code')->orderBy('id ASC')->asArray()->all();
-
+        $tag = Tag::find()->where(['user_id' => $userId])->asArray()->all();
 
         return [
             'category' => $category,
             'project' => $project,
             'priority' => $priority,
-            'status'=> $status
+            'status'=> $status,
+            'tag' => $tag
         ];
 
 
@@ -241,7 +244,6 @@ class TaskController extends AbstractApiController
     }
 
     private function saveFile($model){
-        //    TODO:: Добавить проверку уникальности загружаемых файлов, через md5_file
         $uploadForm = new UploadForm();
         $uploadForm->file  = UploadFileExt::getInstancesByName( 'file');
         if(empty($uploadForm->file))

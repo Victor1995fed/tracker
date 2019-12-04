@@ -17,6 +17,8 @@ use yii\db\Exception;
 class Task extends ActiveRecord
 {
 
+    public $tagArray;
+
     public static function tableName()
     {
         return 'task';
@@ -25,6 +27,7 @@ class Task extends ActiveRecord
     /**
      * {@inheritdoc}
      */
+    //TODO: Добавить сценарии
     public function rules()
     {
         return [
@@ -43,7 +46,8 @@ class Task extends ActiveRecord
             [['readiness'], 'integer'],
             [['parent_id'], 'integer'],
             [['spending'], 'double', 'max'=>100, 'min'=>0.0],
-            [['user_id'], 'integer']
+            [['user_id'], 'integer'],
+            [['tagArray'],'safe']
         ];
 
     }
@@ -70,6 +74,39 @@ class Task extends ActiveRecord
         ];
 
 
+    }
+
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        $this->updateTags();
+    }
+
+    protected function updateTags()
+    {
+        //Сохранение меток
+        $currentTagsId = $this->getTag()->select('id')->column();
+        $newTagsId = $this->getTagsArray();
+        foreach (array_filter(array_diff($newTagsId, $currentTagsId)) as $tagsId) {
+            if ($tags = Tag::findOne($tagsId)) {
+                $this->link('tag', $tags);
+            }
+        }
+        foreach (array_filter(array_diff($currentTagsId, $newTagsId)) as $tagsId) {
+
+            if ($tags = Tag::findOne($tagsId)) {
+                $this->unlink('tag', $tags, true);
+            }
+        }
+    }
+
+    public function getTagsArray()
+    {
+        if ($this->tagArray === null) {
+            $this->tagArray = $this->getTag()->select('id')->column();
+        }
+        return $this->tagArray;
     }
 
     public function getCategory(){
@@ -106,7 +143,7 @@ class Task extends ActiveRecord
 
     public function getTag(){
 //        TODO:: Переделать сортировку по date_create
-        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->orderBy(['id' => SORT_DESC])
+        return $this->hasMany(Tag::class, ['id' => 'tag_id'])
             ->viaTable('task_tag', ['task_id' => 'id']);
     }
 
