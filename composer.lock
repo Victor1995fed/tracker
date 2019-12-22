@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6156939cb9dc31f5b468fdc8dc84f7b",
+    "content-hash": "16c07f042b165c852071e70014662ae4",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -884,21 +884,24 @@
         },
         {
             "name": "yiisoft/yii2-elasticsearch",
-            "version": "2.0.5",
+            "version": "2.1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-elasticsearch.git",
-                "reference": "82d66d17543040dda3c64f299ae251658156c2c1"
+                "reference": "c9ef9326474a11a9a024082fbe71747f9952672d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-elasticsearch/zipball/82d66d17543040dda3c64f299ae251658156c2c1",
-                "reference": "82d66d17543040dda3c64f299ae251658156c2c1",
+                "url": "https://api.github.com/repos/yiisoft/yii2-elasticsearch/zipball/c9ef9326474a11a9a024082fbe71747f9952672d",
+                "reference": "c9ef9326474a11a9a024082fbe71747f9952672d",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "yiisoft/yii2": "~2.0.14"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.8.27|~5.7.21|^6.2"
             },
             "type": "yii2-extension",
             "extra": {
@@ -929,7 +932,7 @@
                 "search",
                 "yii2"
             ],
-            "time": "2018-03-20T11:34:58+00:00"
+            "time": "2019-09-03T15:27:06+00:00"
         },
         {
             "name": "yiisoft/yii2-swiftmailer",
@@ -3651,7 +3654,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
