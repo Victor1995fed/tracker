@@ -4,13 +4,10 @@ namespace frontend\models;
 
 use app\models\File;
 use app\models\Tag;
+use common\models\elastic\Task as ElastiTask;
 use frontend\constants\HistoryAction;
 use frontend\constants\Settings;
-use Yii;
-use yii\base\Model;
 use yii\db\ActiveRecord;
-use yii\db\Exception;
-
 /**
  * ContactForm is the model behind the contact form.
  */
@@ -22,6 +19,30 @@ class Task extends ActiveRecord
     public static function tableName()
     {
         return 'task';
+    }
+
+    public function afterSave($insert, $changedAttributes){
+        parent::afterSave($insert, $changedAttributes);
+        $this->updateTags();
+        //Обновляем или добавляем запись в elasticsearch
+        if($insert) {
+            $elastic = new ElastiTask();
+            $elastic->fill($this);
+            $elastic->setPrimaryKey($this->id);
+            $elastic->save(false);
+        } else {
+            $elastic = ElastiTask::get($this->id);
+            $elastic->fill($this);
+            $elastic->update(false, ['description','title']);
+        }
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+//        Удаляем данные из  elasticsearch
+        $elastic = ElastiTask::get($this->id);
+        $elastic->delete();
     }
 
     /**
@@ -76,12 +97,6 @@ class Task extends ActiveRecord
 
     }
 
-
-    public function afterSave($insert, $changedAttributes)
-    {
-        parent::afterSave($insert, $changedAttributes);
-        $this->updateTags();
-    }
 
     protected function updateTags()
     {

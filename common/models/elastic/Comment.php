@@ -7,13 +7,13 @@ namespace common\models\elastic;
 /**
  * ContactForm is the model behind the contact form.
  */
-class Note extends ElasticMain
+class Comment extends ElasticMain
 {
 
     // index
     public static function index()
     {
-        return 'note';
+        return 'comment';
     }
 
     // type
@@ -28,11 +28,7 @@ class Note extends ElasticMain
     {
         return [
             [['id'], 'integer'],
-            [['title'], 'required'],
-            [['title', 'content'], 'string'],
-            [['title'], 'string', 'max' => 250],
-            [['date_create'], 'date', 'format' => 'yyyy-MM-dd']
-
+            [['content'], 'string'],
         ];
     }
 
@@ -42,7 +38,7 @@ class Note extends ElasticMain
     public function attributes()
     {
         // path mapping for '_id' is setup to field 'id'
-        return ['id', 'title', 'content', 'date_create'];
+        return ['id',  'content'];
     }
 
     /**
@@ -54,9 +50,7 @@ class Note extends ElasticMain
             static::type() => [
                 'properties' => [
                     'id' => ['type'=>'long'],
-                    'title' => ['type' => 'string'],
                     'content'    => ['type' => 'text'],
-                    'date_create' => ['type' => 'date']
                 ]
             ],
         ];
