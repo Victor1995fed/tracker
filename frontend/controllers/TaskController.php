@@ -15,6 +15,7 @@ use Yii;
 use yii\filters\VerbFilter;
 use frontend\models\Task;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * Site controller

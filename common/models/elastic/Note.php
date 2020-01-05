@@ -27,11 +27,10 @@ class Note extends ElasticMain
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['title'], 'required'],
+            [['id','user_id'], 'integer'],
+            [['content'], 'required'],
             [['title', 'content'], 'string'],
             [['title'], 'string', 'max' => 250],
-            [['date_create'], 'date', 'format' => 'yyyy-MM-dd']
 
         ];
     }
@@ -42,7 +41,7 @@ class Note extends ElasticMain
     public function attributes()
     {
         // path mapping for '_id' is setup to field 'id'
-        return ['id', 'title', 'content', 'date_create'];
+        return ['id', 'title', 'content','user_id'];
     }
 
     /**
@@ -56,7 +55,7 @@ class Note extends ElasticMain
                     'id' => ['type'=>'long'],
                     'title' => ['type' => 'string'],
                     'content'    => ['type' => 'text'],
-                    'date_create' => ['type' => 'date']
+                    'user_id' => ['type'=>'integer']
                 ]
             ],
         ];

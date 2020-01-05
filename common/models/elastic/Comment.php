@@ -29,6 +29,7 @@ class Comment extends ElasticMain
         return [
             [['id'], 'integer'],
             [['content'], 'string'],
+            [['user_id'], 'integer'],
         ];
     }
 
@@ -38,7 +39,7 @@ class Comment extends ElasticMain
     public function attributes()
     {
         // path mapping for '_id' is setup to field 'id'
-        return ['id',  'content'];
+        return ['id',  'content','user_id'];
     }
 
     /**
@@ -51,6 +52,7 @@ class Comment extends ElasticMain
                 'properties' => [
                     'id' => ['type'=>'long'],
                     'content'    => ['type' => 'text'],
+                    'user_id'    => ['type' => 'integer'],
                 ]
             ],
         ];

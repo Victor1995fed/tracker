@@ -26,8 +26,8 @@ class Project extends ElasticMain
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['title'], 'required'],
+            [['id','user_id'], 'integer'],
+            [['title','user_id'], 'required'],
             [['title', 'description'], 'string'],
             [['title'], 'string', 'max' => 250],
 
@@ -40,7 +40,7 @@ class Project extends ElasticMain
     public function attributes()
     {
         // path mapping for '_id' is setup to field 'id'
-        return ['id', 'title', 'description'];
+        return ['id', 'title', 'description','user_id'];
     }
 
     /**
@@ -53,7 +53,8 @@ class Project extends ElasticMain
                 'properties' => [
                     'id' => ['type'=>'long'],
                     'title' => ['type' => 'string'],
-                    'description' => ['type' => 'text']
+                    'description' => ['type' => 'text'],
+                    'user_id' => ['type' => 'integer'],
                 ]
             ],
         ];
