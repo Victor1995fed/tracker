@@ -9,6 +9,8 @@ use yii\elasticsearch\Query;
 
 class AppController extends AbstractApiController
 {
+
+    public $size = 10;
     /**
      * @inheritdoc
      */
@@ -51,11 +53,45 @@ class AppController extends AbstractApiController
                 ]
 
             ]
-        ])->limit(10);
+        ])->highlight(
+            ['fields'=>
+                ['content'=>new \stdClass(), 'description'=>new \stdClass(),'title'=>new \stdClass()]
+            ])
+            ->limit($this->size);
 
 
         $command = $query->createCommand();
         $rows = $command->search();
-        return $rows;
+        $result = $this->processingResult($rows);
+        $result['totalPage']  = $this->getTotalPage($rows);
+        return $result;
+    }
+
+    private function getTotalPage($rows)
+    {
+        $total = $rows['hits']['total']['value'] ?? false;
+        if($total === false)
+            throw new HttpException(500, serialize($rows));
+
+        if($total == 0)
+            throw new HttpException(404, 'Ничего не найдено');
+
+        $totalPage = ceil($total / $this->size);
+
+        return $totalPage;
+
+    }
+
+    private function processingResult($rows)
+    {
+        $newResult = [];
+        foreach ($rows['hits']['hits'] as $k=>$v){
+            $newResult['rows'][] = [
+                'id'=>$v['_id'],
+                'content'=>strip_tags(current($v['highlight'])[0], '<em>'),
+                'index' => $v['_index']
+                ];
+        }
+        return $newResult;
     }
 }
