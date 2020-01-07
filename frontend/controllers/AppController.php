@@ -28,7 +28,7 @@ class AppController extends AbstractApiController
         return $behaviors;
     }
 
-    public function actionSearch($str)
+    public function actionSearch($page,$str)
     {
         $query = new Query;
         $query->query([
@@ -54,10 +54,13 @@ class AppController extends AbstractApiController
 
             ]
         ])->highlight(
-            ['fields'=>
+            [
+                "pre_tags"  => "<highlight-string>",
+                "post_tags" => "</highlight-string>",
+                'fields'=>
                 ['content'=>new \stdClass(), 'description'=>new \stdClass(),'title'=>new \stdClass()]
             ])
-            ->limit($this->size);
+            ->limit($this->size)->offset($this->size * ($page - 1));
 
 
         $command = $query->createCommand();
@@ -88,10 +91,12 @@ class AppController extends AbstractApiController
         foreach ($rows['hits']['hits'] as $k=>$v){
             $newResult['rows'][] = [
                 'id'=>$v['_id'],
-                'content'=>strip_tags(current($v['highlight'])[0], '<em>'),
+                'content'=>strip_tags(current($v['highlight'])[0], '<highlight-string>'),
                 'index' => $v['_index']
                 ];
         }
         return $newResult;
     }
+
+
 }

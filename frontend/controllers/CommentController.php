@@ -69,10 +69,14 @@ class CommentController extends AbstractApiController
 
     public function actionView($id)
     {
-        $Comment = $this->findModel($id);
-        return [
-            'Comment' => $Comment,
-        ];
+        $model = $this->findModel($id);
+        $this->checkAccess($model);
+        return
+            [
+                'comment' => $model,
+                'taskId' => $model->task[0]['id']
+            ];
+
     }
 
     /**
