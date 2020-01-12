@@ -43,6 +43,9 @@ class Task extends ActiveRecord
 //        Удаляем данные из  elasticsearch
         $elastic = ElastiTask::get($this->id);
         $elastic->delete();
+        //Удаление связанных данных
+        //TODO:: Добавить удаление комментариев
+
     }
 
     /**

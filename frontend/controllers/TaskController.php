@@ -6,6 +6,7 @@ use app\models\UploadForm;
 use app\modules\helpers\UploadFileExt;
 use frontend\constants\Settings;
 use frontend\models\Category;
+use frontend\models\Comment;
 use frontend\models\History;
 use frontend\models\Priority;
 use frontend\models\Project;
@@ -184,6 +185,7 @@ class TaskController extends AbstractApiController
         $model =  $this->findModel($id);
         $this->checkAccess($model);
         $files = $model->file;
+        $comments = $model->comment;
         //TODO:: Вынести удаление файлов с сервера в отдельную функцию в модель File
         //Удаление файлов с сервера
         foreach ($files as $key => $file){
@@ -191,6 +193,14 @@ class TaskController extends AbstractApiController
                 @unlink($file['url']);
         }
         $model->unlinkAll('file',true);
+
+
+        //Удаление комментариев
+        $model->unlinkAll('comment',true);
+        foreach ($comments as $key => $one){
+            $comment = Comment::findOne($one['id']);
+            $comment->delete();
+        }
         $model->delete();
         return true;
     }
