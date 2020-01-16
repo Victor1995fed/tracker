@@ -139,9 +139,12 @@ class TaskController extends AbstractApiController
 
     public function actionUpdate($id)
     {
+        //TODO:: Добавить сценарии
         $model = $this->findModel($id);
         $this->checkAccess($model);
         $modelOldAttributes = $model->getAttributes();
+        $model->date_start = null;
+        $model->date_end = null;
         if ($model->load(Yii::$app->request->post(),'') ) {
             //Сумма трудозатрат
             $spending = Yii::$app->request->post('spending');

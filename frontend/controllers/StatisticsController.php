@@ -53,6 +53,7 @@ class StatisticsController extends AbstractApiController
      */
     public function actionIndex()
     {
+        //TODO:: Добавить реальную дату завершения, и фильтровать тоже по ней
         $queryCurrentMouth = 'MONTH(`date`) = MONTH(NOW())
 AND YEAR(`date`) = YEAR(NOW())';
         $countInCurrentMonth = Task::find()->where([
