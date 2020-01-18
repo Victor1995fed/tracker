@@ -5,6 +5,7 @@ use frontend\models\Status;
 use frontend\models\Task;
 use Yii;
 use yii\db\Exception;
+use yii\db\Expression;
 use yii\filters\VerbFilter;
 use app\modules\helper\Helper;
 use yii\web\HttpException;
@@ -54,25 +55,23 @@ class StatisticsController extends AbstractApiController
     public function actionIndex()
     {
         //TODO:: Добавить реальную дату завершения, и фильтровать тоже по ней
-        $queryCurrentMouth = 'MONTH(`date`) = MONTH(NOW())
-AND YEAR(`date`) = YEAR(NOW())';
-        $countInCurrentMonth = Task::find()->where([
+        $queryCurrentMouth = '(MONTH(`date`) = MONTH(NOW())
+    AND YEAR(`date`) = YEAR(NOW())) or (MONTH(`date_end`) = MONTH(NOW())
+    AND YEAR(`date_end`) = YEAR(NOW()) and status_id = '.'3'.')'; //TODO:: Заменить на константу
+        $countAll = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
             ])
-            ->andWhere($queryCurrentMouth)
             ->count();
-        $countDoneCurrentMouth = Task::find()->where([
+        $countDone = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
             'status_id' => 3 //TODO:: Заменить на константы
             ])
-            ->andWhere($queryCurrentMouth)
             ->count();
 
-        $countNewCurrentMouth = Task::find()->where([
+        $countNew = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
             'status_id' => 1
         ])
-            ->andWhere($queryCurrentMouth)
             ->count();
 
         $allTaskCurrentMouth = Task::find()->where([
@@ -80,12 +79,23 @@ AND YEAR(`date`) = YEAR(NOW())';
         ])
             ->andWhere($queryCurrentMouth)->asArray()->all();
 
+        //Общее кол-во трудозатрат по проектам
+        $spending = Task::find()
+            ->select([new Expression('SUM(task.spending) as sum_spending'), 'project.id','project.title'])
+            ->leftJoin('project','task.project_id = project.id')
+            ->where([
+                'task.user_id'=>\Yii::$app->user->identity->id,
+            ])
+            ->groupBy('task.project_id')->asArray()->all();
+
+
         return
             [
-                'count_done'=> $countDoneCurrentMouth,
-                'count_new'=> $countNewCurrentMouth,
-                'count_other' => $countInCurrentMonth - $countDoneCurrentMouth - $countNewCurrentMouth,
-                'count_create_in_current_month'=>$countInCurrentMonth,
+                'count_done'=> $countDone,
+                'spending' => $spending,
+                'count_new'=> $countNew,
+                'count_other' => $countAll - $countDone - $countNew,
+                'count_create_in_current_month'=>$countAll,
                 'line_chart' => $this->partDataPeriod($allTaskCurrentMouth)
                 //TODO:: И так далее...
             ];
@@ -93,8 +103,9 @@ AND YEAR(`date`) = YEAR(NOW())';
 
     public function actionTest()
     {
-        $queryCurrentMouth = 'MONTH(`date`) = MONTH(NOW())
-AND YEAR(`date`) = YEAR(NOW())';
+        $queryCurrentMouth = '(MONTH(`date`) = MONTH(NOW())
+    AND YEAR(`date`) = YEAR(NOW())) or (MONTH(`date_end`) = MONTH(NOW())
+    AND YEAR(`date_end`) = YEAR(NOW()))';
         $allTaskCurrentMouth = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
         ])
@@ -102,7 +113,6 @@ AND YEAR(`date`) = YEAR(NOW())';
 
         return $this->partDataPeriod($allTaskCurrentMouth);
     }
-
 
     private function getPeriodWeek()
     {
@@ -126,19 +136,19 @@ AND YEAR(`date`) = YEAR(NOW())';
         $week = $this->getPeriodWeek();
         $keys = array_fill_keys(array_keys($week),0);
         $result = [
-//            'new'=>$keys,
             'done'=>$keys,
             'all'=>$keys,
             'week'=>$week
         ];
         $count = 0;
+        //FIXME:: Неправильно отображаются выполненные задачи, требуется, чтобы для них учитывалась date_end , а не date
         foreach ($queryCurrentMouth as $key => $value){
                 foreach ($week as $k=>$v){
                     $dateCreate = strtotime($value['date']);
-
                     $day = date('d', $dateCreate);
                     if(in_array($day, $v)){
                         switch ($value['status_id']){
+
 //                            case '1':
 //                                $keyResult = 'new';
 //                                break;

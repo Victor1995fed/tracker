@@ -18,4 +18,9 @@ class Helper extends Module
 //        }
 return $rules;
     }
+
+    public function genColor()
+    {
+        return dechex(mt_rand(0, 16777215));
+    }
 }

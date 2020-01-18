@@ -72,7 +72,6 @@ class TaskController extends AbstractApiController
 
     public function actionIndex($page)
     {
-
         $searchModel = new TaskSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
