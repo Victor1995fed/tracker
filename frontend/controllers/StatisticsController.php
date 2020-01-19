@@ -55,9 +55,21 @@ class StatisticsController extends AbstractApiController
     public function actionIndex()
     {
         //TODO:: Добавить реальную дату завершения, и фильтровать тоже по ней
-        $queryCurrentMouth = '(MONTH(`date`) = MONTH(NOW())
-    AND YEAR(`date`) = YEAR(NOW())) or (MONTH(`date_end`) = MONTH(NOW())
-    AND YEAR(`date_end`) = YEAR(NOW()) and status_id = '.'3'.')'; //TODO:: Заменить на константу
+        $queryCurrentMouth = 'MONTH(`date`) = MONTH(NOW())
+    AND YEAR(`date`) = YEAR(NOW())';
+        $queryCurrentMouthDone = 'MONTH(`date_end`) = MONTH(NOW())
+    AND YEAR(`date_end`) = YEAR(NOW())';
+        //Выборка всех соданных задач
+        $allTaskCurrentMouth = Task::find()->where([
+            'user_id'=>\Yii::$app->user->identity->id,
+        ])
+            ->andWhere($queryCurrentMouth)->asArray()->all();
+        //Выборка выполненных задач
+        $doneTaskCurrentMouth = Task::find()->where([
+            'user_id'=>\Yii::$app->user->identity->id,
+            'status_id'=>3 //TODO:: Заменить на константу
+        ])
+            ->andWhere($queryCurrentMouthDone)->asArray()->all();
         $countAll = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
             ])
@@ -74,12 +86,9 @@ class StatisticsController extends AbstractApiController
         ])
             ->count();
 
-        $allTaskCurrentMouth = Task::find()->where([
-            'user_id'=>\Yii::$app->user->identity->id,
-        ])
-            ->andWhere($queryCurrentMouth)->asArray()->all();
 
-        //Общее кол-во трудозатрат по проектам
+
+        //Общее кол-во трудозатрат по проектам за текущую неделю
         $spending = Task::find()
             ->select([new Expression('SUM(task.spending) as sum_spending'), 'project.id','project.title'])
             ->leftJoin('project','task.project_id = project.id')
@@ -96,7 +105,8 @@ class StatisticsController extends AbstractApiController
                 'count_new'=> $countNew,
                 'count_other' => $countAll - $countDone - $countNew,
                 'count_create_in_current_month'=>$countAll,
-                'line_chart' => $this->partDataPeriod($allTaskCurrentMouth)
+                'line_chart_all' => $this->partDataPeriod($allTaskCurrentMouth),
+                'line_chart_done' => $this->partDataPeriod($doneTaskCurrentMouth, 'date_end'),
                 //TODO:: И так далее...
             ];
     }
@@ -116,55 +126,29 @@ class StatisticsController extends AbstractApiController
 
     private function getPeriodWeek()
     {
-        $start = new \DateTime('first day of this month');
-        $end = new \DateTime('last day of this month');
-        $interval = new \DateInterval('P1D');
-        $dateRange = new \DatePeriod($start, $interval, $end);
-        $weekNumber = 1;
-        $weeks = [];
-        foreach ($dateRange as $date) {
-            $weeks[$weekNumber][] = $date->format('d');
-            if ($date->format('w') == 0) {
-                $weekNumber++;
-            }
+        $year = date('Y');
+        $month = date('m');
+        $num = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $datesMonth=[];
+        for($i=1;$i<=$num;$i++){
+            $mktime=mktime(0,0,0,$month,$i,$year);
+            $date=date("d",$mktime);
+            $datesMonth[$i]=$date;
         }
-        return $weeks;
+        return $datesMonth;
     }
 
-    private function partDataPeriod($queryCurrentMouth)
+    private function partDataPeriod(array $queryCurrentMouth, string $dateType='date')
     {
-        $week = $this->getPeriodWeek();
-        $keys = array_fill_keys(array_keys($week),0);
-        $result = [
-            'done'=>$keys,
-            'all'=>$keys,
-            'week'=>$week
-        ];
-        $count = 0;
-        //FIXME:: Неправильно отображаются выполненные задачи, требуется, чтобы для них учитывалась date_end , а не date
-        foreach ($queryCurrentMouth as $key => $value){
-                foreach ($week as $k=>$v){
-                    $dateCreate = strtotime($value['date']);
-                    $day = date('d', $dateCreate);
-                    if(in_array($day, $v)){
-                        switch ($value['status_id']){
-
-//                            case '1':
-//                                $keyResult = 'new';
-//                                break;
-                            case '3':
-                                $result['done'][$k] = $result['done'][$k] + 1;
-                                break;
-                            default:
-                                $result['all'][$k] = $result['all'][$k] + 1;
-                                break;
-                        }
-                        break;
-                    }
-
-                }
+        $days = $this->getPeriodWeek();
+        $keys = array_fill_keys(array_keys($days),0);
+        foreach ($queryCurrentMouth as $key=>$value){
+            $dayTask =  (int)date('d', strtotime($value[$dateType]));
+            if(in_array($dayTask, $days)){
+                $keys[$dayTask]++;
+            }
         }
-        return $result;
+        return $keys;
     }
 
 
