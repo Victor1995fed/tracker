@@ -82,6 +82,15 @@ class TaskController extends AbstractApiController
         return ['task'=>$dataProvider->getModels(),'countPage'=>$totalPage];
     }
 
+    public function actionTest($utc)
+    {
+
+        $time_client = $utc * 3600;
+        $real_time = time() + $time_client;
+
+       return date("Y-m-d", $real_time);
+    }
+
     public function actionView($id)
     {
         $task = $this->findModel($id);

@@ -63,6 +63,7 @@ class Task extends ActiveRecord
             [['priority_id'], 'integer', 'max' => 4],
             [['priority_id'], 'required'],
             [['project_id'], 'integer'],
+            [['utc'], 'number', 'min' => -12, 'max' => 12],
             [['date'], 'date', 'format' => 'yyyy-MM-dd'],
             [['date_start','date_end'], 'default', 'value' => null],
             [['date_start','date_end'], 'date', 'format' => Settings::DATE_FORMAT_MODEL],

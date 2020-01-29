@@ -66,8 +66,8 @@ class SiteController extends Controller
 //    Для отмены редиректа на Login убрать правила в behaviors;
     public function actionTest()
     {
-        echo 'df';
-        return "teeeee";
+        return date("O");
+//        return "teeeee";
     }
 
     /**
