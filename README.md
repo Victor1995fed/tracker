@@ -22,7 +22,7 @@ API для таск-трекера на YII2
      $ docker-compose up -d
      $ docker-compose  exec api  make install 
 ```
-- Затем укажите данные для БД в конфигах, пример: 
+- Затем укажите данные для БД в common/config/main-local.php, пример: 
 ```
 'db' => [
                 'class' => 'yii\db\Connection',
