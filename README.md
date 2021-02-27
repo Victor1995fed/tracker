@@ -3,6 +3,9 @@
 API для таск-трекера на YII2
 
 Установить фронт для api можно по [ссылке](https://github.com/Victor1995fed/tracker-front.git)
+
+![Иллюстрация к проекту](https://github.com/Victor1995fed/tracker-front/raw/master/image/api.png)
+
 ### Технологии:
      - Mysql:5.7
      - ElasticSearch:7.11.1
