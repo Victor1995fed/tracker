@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 use frontend\constants\Settings;
+use frontend\constants\TaskStatus;
 use frontend\models\Status;
 use frontend\models\Task;
 use Yii;
@@ -67,7 +68,7 @@ class StatisticsController extends AbstractApiController
         //Выборка выполненных задач
         $doneTaskCurrentMouth = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
-            'status_id'=>3 //TODO:: Заменить на константу
+            'status_id'=>TaskStatus::DONE
         ])
             ->andWhere($queryCurrentMouthDone)->asArray()->all();
         $countAll = Task::find()->where([
@@ -76,13 +77,13 @@ class StatisticsController extends AbstractApiController
             ->count();
         $countDone = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
-            'status_id' => 3 //TODO:: Заменить на константы
+            'status_id' => TaskStatus::DONE
             ])
             ->count();
 
         $countNew = Task::find()->where([
             'user_id'=>\Yii::$app->user->identity->id,
-            'status_id' => 1
+            'status_id' => TaskStatus::NEW
         ])
             ->count();
 

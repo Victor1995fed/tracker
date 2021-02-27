@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\helpers;
+namespace frontend\modules\helpers;
 use yii\db\Exception;
 use yii\web\UploadedFile;
 

@@ -12,6 +12,11 @@ class m190407_055620_create_category_table extends Migration
      */
     public function safeUp()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+        }
+
         $this->createTable('{{%category}}', [
             'id' => $this->primaryKey(),
             'title' => $this->string(),
@@ -20,7 +25,7 @@ class m190407_055620_create_category_table extends Migration
             'date' => $this->date(),
             'image' => $this->string(),
             'sub_category' => $this->integer()
-        ]);
+        ],$tableOptions);
     }
 
     /**

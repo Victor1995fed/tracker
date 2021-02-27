@@ -12,6 +12,11 @@ class m190407_055639_create_sub_category_table extends Migration
      */
     public function safeUp()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+        }
+
         $this->createTable('{{%sub_category}}', [
             'id' => $this->primaryKey(),
             'title' => $this->string(),
@@ -19,7 +24,7 @@ class m190407_055639_create_sub_category_table extends Migration
             'id_project' => $this->text(),
             'date' => $this->date(),
             'image' => $this->string(),
-        ]);
+        ],$tableOptions);
     }
 
     /**

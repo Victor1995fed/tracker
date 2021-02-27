@@ -1,17 +1,46 @@
-<h1>Команды</h1>
-<h3>Elasticsearch</h3>
-1)Пересоздать индексы 
+## Task tracker (api)
+### Описание:
+API для таск-трекера на YII2
+
+Установить фронт для api можно по [ссылке](https://github.com/Victor1995fed/tracker-front.git)
+
+### Системные требования:
+- `docker >= 18.0` _(установка: `curl -fsSL get.docker.com | sudo sh`)_
+-  `docker-compose >= 3` _([installing manual](https://docs.docker.com/compose/install/#install-compose))_
+
+
+### Запуск:
+- Введите следующие команды в консоль:
+
+``` 
+     $ git clone https://github.com/Victor1995fed/tracker.git
+     $ cd tracker
+     $ docker-compose up -d
+     $ docker-compose  exec api  make install 
+```
+- Затем укажите данные для БД в конфигах, пример: 
+```
+'db' => [
+                'class' => 'yii\db\Connection',
+                'dsn' => 'mysql:host=mysql;dbname=yii2advanced',
+                'username' => 'yii2advanced',
+                'password' => 'secret',
+                'charset' => 'utf8',
+            ], 
+```
+- Выполните миграции и заполните начальными данными:
+```
+docker-compose exec api make run 
+```
+- API будет доступно по [localhost:20080](http://localhost:20080)
+
+- Теперь можно установить [фронтенд](https://github.com/Victor1995fed/tracker-front.git)
+
+#### Дополнительные команды:
+
+##### Elasticsearch
+- Пересоздать индексы(внутри докер-контейнера): 
 
 ```
-yii elastic/create-index
-```
-
-<h5>Запросы к api elasticsearch</h5>
-1)Получить документ data индекса task
-```
-http://127.0.0.1:9200/task/data/_search
-```
-2)Получить список всех индексов
-```
-http://127.0.0.1:9200/_aliases
+php yii elastic/create-index
 ```

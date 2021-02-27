@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\modules\helpers\UploadFileExt;
+use frontend\modules\helpers\UploadFileExt;
 use frontend\constants\Settings;
 use frontend\models\Task;
 use Yii;

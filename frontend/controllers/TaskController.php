@@ -1,10 +1,11 @@
 <?php
 namespace frontend\controllers;
 use app\models\File;
-use app\models\Tag;
+use frontend\models\Tag;
 use app\models\UploadForm;
-use app\modules\helpers\UploadFileExt;
+use frontend\modules\helpers\UploadFileExt;
 use frontend\constants\Settings;
+use frontend\constants\TaskStatus;
 use frontend\models\Category;
 use frontend\models\Comment;
 use frontend\models\History;
@@ -125,7 +126,7 @@ class TaskController extends AbstractApiController
             $model->date = date(Settings::DATE_FORMAT_PHP);
             $status = Yii::$app->request->post('status_id');
             if ($status === null)
-                $model->status_id = 1;
+                $model->status_id = TaskStatus::NEW;
             $model->load(Yii::$app->request->post(), '');
             $model->user_id = \Yii::$app->user->identity->id;
             if ($model->validate() && $model->save()) {

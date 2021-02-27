@@ -33,7 +33,7 @@ class ElasticController extends Controller {
         catch (\Exception $e){
             throw new Exception($e->getMessage());
         }
-
+        echo "Готово!";
     }
 
     private function setData(array $data, string $model)

@@ -1,7 +1,7 @@
 <?php
 
 namespace frontend\controllers;
-use app\models\Tag;
+use frontend\models\Tag;
 use frontend\constants\Settings;
 use frontend\models\Note;
 use Yii;

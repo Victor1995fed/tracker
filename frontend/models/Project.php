@@ -10,6 +10,8 @@ use yii\db\ActiveRecord;
 class Project extends ActiveRecord
 {
 
+    protected $notSaveToElastic = false;
+
     public static function tableName()
     {
         return 'project';
@@ -18,6 +20,9 @@ class Project extends ActiveRecord
 
     public function afterSave($insert, $changedAttributes){
         parent::afterSave($insert, $changedAttributes);
+        if($this->notSaveToElastic){
+            return true;
+        }
         //Обновляем или добавляем запись в elasticsearch
         if($insert) {
             $elastic = new ElasticProject();
@@ -75,5 +80,10 @@ class Project extends ActiveRecord
 
     public function getStatus(){
         return $this->hasOne(Status::class, ['id' => 'status_id']);
+    }
+
+    public function dontSaveToElastic()
+    {
+        $this->notSaveToElastic = true;
     }
 }

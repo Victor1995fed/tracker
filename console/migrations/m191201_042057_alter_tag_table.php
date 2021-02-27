@@ -20,9 +20,7 @@ class m191201_042057_alter_tag_table extends Migration
      */
     public function safeDown()
     {
-        echo "m191201_042057_alter_tag_table cannot be reverted.\n";
-
-        return false;
+        return true;
     }
 
     /*

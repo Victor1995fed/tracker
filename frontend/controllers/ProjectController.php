@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 use frontend\constants\Settings;
+use frontend\constants\TaskStatus;
 use frontend\models\Status;
 use Yii;
 use yii\filters\VerbFilter;
@@ -80,7 +81,7 @@ class ProjectController extends AbstractApiController
         $model->date = date(Settings::DATE_FORMAT_PHP);
         $status = Yii::$app->request->post('status_id');
         if ($status === null)
-            $model->status_id = 7;
+            $model->status_id = TaskStatus::OPEN;
 
         $model->load(Yii::$app->request->post(),'');
         $model->user_id = \Yii::$app->user->identity->id;

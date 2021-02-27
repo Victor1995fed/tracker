@@ -3,7 +3,6 @@
 namespace frontend\models;
 
 use app\models\File;
-use app\models\Tag;
 use common\models\elastic\Task as ElastiTask;
 use frontend\constants\HistoryAction;
 use frontend\constants\Settings;
@@ -15,6 +14,7 @@ class Task extends ActiveRecord
 {
 
     public $tagArray;
+    protected $notSaveToElastic = false;
 
     public static function tableName()
     {
@@ -23,6 +23,9 @@ class Task extends ActiveRecord
 
     public function afterSave($insert, $changedAttributes){
         parent::afterSave($insert, $changedAttributes);
+        if($this->notSaveToElastic){
+            return true;
+        }
         $this->updateTags();
         //Обновляем или добавляем запись в elasticsearch
         if($insert) {
@@ -207,5 +210,10 @@ class Task extends ActiveRecord
             $result[$v['id']] = $v['title'];
         }
         return $result;
+    }
+
+    public function dontSaveToElastic()
+    {
+        $this->notSaveToElastic = true;
     }
 }

@@ -41,6 +41,26 @@ class User extends ActiveRecord implements IdentityInterface
         return '{{%user}}';
     }
 
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_LOGIN] = ['username', 'password_hash'];
+        $scenarios[self::SCENARIO_REGISTER] = ['username', 'password_hash','email'];
+        return $scenarios;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            ['status', 'default', 'value' => self::STATUS_INACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            [['username', 'password_hash', 'email'], 'required']
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -59,18 +79,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
         return false;
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-            self::SCENARIO_LOGIN => ['username', 'password'],
-            self::SCENARIO_REGISTER => ['username', 'email', 'password'],
-        ];
-    }
+
 
     /**
      * {@inheritdoc}
