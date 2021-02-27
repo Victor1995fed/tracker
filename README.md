@@ -40,7 +40,7 @@ API для таск-трекера на YII2
 docker-compose exec api make run 
 ```
 - API будет доступно по [localhost:20080](http://localhost:20080)
-
+- Тестовый пользователь: test 123456
 - Теперь можно установить [фронтенд](https://github.com/Victor1995fed/tracker-front.git)
 
 #### Дополнительные команды:
