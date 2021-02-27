@@ -116,9 +116,9 @@ class SeedController extends Controller
     public function actionIndex()
     {
         try {
-//            $this->addUser();
-//            $this->addPriority();
-//            $this->addStatuses();
+            $this->addUser();
+            $this->addPriority();
+            $this->addStatuses();
             $this->addProject();
             $this->addTask();
         }
